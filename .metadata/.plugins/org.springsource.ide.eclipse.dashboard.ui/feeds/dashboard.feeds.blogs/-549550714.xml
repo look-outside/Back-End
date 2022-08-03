@@ -5,7 +5,33 @@
   <link rel="self" href="https://spring.io/blog.atom" />
   <id>http://spring.io/blog.atom</id>
   <icon>https://spring.io/favicon.ico</icon>
-  <updated>2022-08-02T07:00:00Z</updated>
+  <updated>2022-08-02T16:05:26Z</updated>
+  <entry>
+    <title>Spring for Apache Kafka 2.9.0 Available</title>
+    <link rel="alternate" href="https://spring.io/blog/2022/08/02/spring-for-apache-kafka-2-9-0-available" />
+    <category term="releases" label="Releases" />
+    <author>
+      <name>Gary Russell</name>
+    </author>
+    <id>tag:spring.io,2022-08-02:4872</id>
+    <updated>2022-08-02T16:05:26Z</updated>
+    <content type="html">&lt;div class="paragraph"&gt;
+&lt;p&gt;I am pleased to announce that Spring for Apache Kafka 2.9.0 is now available.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;This version is not provided by Spring Boot dependency management, but it can be used with Boot 2.7 (or 2.6), as long as you override the Kafka dependencies to 3.2.0 as described in &lt;a href="https://docs.spring.io/spring-kafka/docs/2.9.0/reference/html/#update-deps"&gt;this appendix&lt;/a&gt;, especially if you are using the embedded Kafka broker.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;Please see the &lt;a href="https://spring.io/blog/2022/07/07/spring-for-apache-kafka-2-9-release-candidate-available"&gt;release candidate announcement&lt;/a&gt; for notable changes in this release.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;For information about all changes in this release, see &lt;a href="https://docs.spring.io/spring-kafka/docs/2.9.0/reference/html/#whats-new-part"&gt;What&amp;#8217;s New&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="paragraph"&gt;
+&lt;p&gt;&lt;a href="https://spring.io/projects/spring-kafka/"&gt;Project Page&lt;/a&gt; | &lt;a href="https://github.com/spring-projects/spring-kafka"&gt;GitHub&lt;/a&gt; | &lt;a href="https://github.com/spring-projects/spring-kafka/issues"&gt;Issues&lt;/a&gt; | &lt;a href="https://docs.spring.io/spring-kafka/docs/2.9.0/reference/html/"&gt;Documentation&lt;/a&gt; | &lt;a href="https://stackoverflow.com/questions/tagged/spring-kafka"&gt;Stack Overflow&lt;/a&gt; | &lt;a href="https://gitter.im/spring-projects/spring-kafka"&gt;Gitter&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;!-- rendered by Sagan Renderer Service --&gt;</content>
+  </entry>
   <entry>
     <title>This Week in Spring - August 1st, 2022</title>
     <link rel="alternate" href="https://spring.io/blog/2022/08/02/this-week-in-spring-august-1st-2022" />
@@ -1162,21 +1188,6 @@ When separating by the database, you might use &lt;code&gt;AbstractRoutingDataSo
     <updated>2022-07-14T13:00:00Z</updated>
     <content type="html">&lt;p&gt;Hi, Spring fans! In this installment, &lt;a href="https://twitter.com/starbuxman"&gt;Josh Long (@starbuxman)&lt;/a&gt; talks to his friend, teammate, and architect extraordinaire, &lt;a href="https://twitter.com/ntschutta"&gt;Nate Schutta (@ntschutta)&lt;/a&gt;&lt;/p&gt;
 &lt;iframe title="Nate Schutta: The Thinking Person¡¯s Architect, My Friend, and Teammate" allowtransparency="true" height="150" width="100%" style="border: none; min-width: min(100%, 430px);" scrolling="no" data-name="pb-iframe-player" src="https://www.podbean.com/player-v2/?i=y9v6x-127346e-pb&amp;from=pb6admin&amp;share=1&amp;download=1&amp;rtl=0&amp;fonts=Arial&amp;skin=1&amp;font-color=&amp;logo_link=episode_page&amp;btn-skin=7"&gt;&lt;/iframe&gt;
-&lt;!-- rendered by Sagan Renderer Service --&gt;</content>
-  </entry>
-  <entry>
-    <title>Spring Framework 6.0.0-M5 and 5.3.22 available now</title>
-    <link rel="alternate" href="https://spring.io/blog/2022/07/14/spring-framework-6-0-0-m5-and-5-3-22-available-now" />
-    <category term="releases" label="Releases" />
-    <author>
-      <name>St?phane Nicoll</name>
-    </author>
-    <id>tag:spring.io,2022-07-14:4852</id>
-    <updated>2022-07-14T09:39:09Z</updated>
-    <content type="html">&lt;p&gt;On behalf of the team and everyone who has contributed, I am pleased to announce that Spring Framework &lt;code&gt;6.0.0-M5&lt;/code&gt; and &lt;code&gt;5.3.22&lt;/code&gt; are available now.&lt;/p&gt;
-&lt;p&gt;Spring Framework &lt;code&gt;5.3.22&lt;/code&gt; includes &lt;a href="https://github.com/spring-projects/spring-framework/releases/tag/v5.3.22"&gt;45 fixes and improvements&lt;/a&gt; and is a recommended upgrade for all Spring production scenarios.&lt;/p&gt;
-&lt;p&gt;Spring Framework &lt;code&gt;6.0.0-M5&lt;/code&gt; includes &lt;a href="https://github.com/spring-projects/spring-framework/releases/tag/v6.0.0-M5"&gt;85 additional fixes and improvements&lt;/a&gt; specific to the 6.0 branch.&lt;/p&gt;
-&lt;p&gt;&lt;a href="https://projects.spring.io/spring-framework/"&gt;Project Page&lt;/a&gt; | &lt;a href="https://github.com/spring-projects/spring-framework"&gt;GitHub&lt;/a&gt; | &lt;a href="https://github.com/spring-projects/spring-framework/issues"&gt;Issues&lt;/a&gt; | &lt;a href="https://docs.spring.io/spring-framework/docs/5.3.22/reference/html/"&gt;Documentation&lt;/a&gt;&lt;/p&gt;
 &lt;!-- rendered by Sagan Renderer Service --&gt;</content>
   </entry>
 </feed>
