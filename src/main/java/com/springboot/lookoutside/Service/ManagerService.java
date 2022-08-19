@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.springboot.lookoutside.domain.Article;
 import com.springboot.lookoutside.domain.User;
 import com.springboot.lookoutside.dto.ArticleMapping;
+import com.springboot.lookoutside.oauth.entity.RoleType;
 import com.springboot.lookoutside.repository.ArticleRepository;
 import com.springboot.lookoutside.repository.UserRepository;
 
@@ -25,12 +26,33 @@ public class ManagerService {
 	private ArticleRepository articleRepository;
 
 	//회원 목록 조회
-	public Page<User> userList(Pageable pageable) {
+	public Map<String, Object> userList(Pageable pageable) {
 
 		Page<User> user = userRepository.findAll(pageable);
 
-		return user;
+		int numberOfElements = user.getNumberOfElements();
+		long totalElements = user.getTotalElements();
+		int number = user.getNumber();
+		int totalPages = user.getTotalPages();
+		int size = user.getSize();
+		
+		Map<String, Object> pageAble = new HashMap<String, Object>();
+		
+		pageAble.put("numberOfElements", numberOfElements);
+		pageAble.put("totalElements", totalElements);
+		pageAble.put("number", number);
+		pageAble.put("totalPages", totalPages);
+		pageAble.put("size", size);
+		pageAble.put("offset", user.getPageable().getOffset());
+		
+		Map<String, Object> userList = new HashMap<String, Object>();
+		
+		userList.put("list", user.getContent());
+		userList.put("pageable", pageAble);
+		
+		return userList;
 	}
+	
 
 	//회원 선택 삭제
 	@Transactional
@@ -57,14 +79,14 @@ public class ManagerService {
 		User persistance = userRepository.findByUseNo(useNo).orElseThrow(() -> { //테스트용
 			return new IllegalArgumentException("0");
 		});
-
+		
 		//권한 변경
-		if(persistance.getUseRole().equals("USER")) {
-			persistance.setUseRole("ADMIN");
+		if(persistance.getUseRole().equals(RoleType.ADMIN)) {
+			persistance.setUseRole(RoleType.USER);
 		}
 
 		else {
-			persistance.setUseRole("USER");
+			persistance.setUseRole(RoleType.ADMIN);
 		}
 
 		//회원정보 함수 종료시 서비스 종료 트랜잭션 종료 commit이 자동으로 실행
