@@ -15,6 +15,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.springboot.lookoutside.oauth.entity.ProviderType;
+import com.springboot.lookoutside.oauth.entity.RoleType;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,7 +35,7 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY) 
 	private int useNo; 
 	
-	@Column(nullable = false , unique = true)
+	@Column(unique = true)
 	private String useNick;
 	
 	@Column(nullable = false , unique = true)
@@ -42,14 +44,15 @@ public class User {
 	@Column(nullable = false)
 	private String usePw;
 	
-	@Column(nullable = false)
+	@Column
 	private String useName;
 	
 	@Column(nullable = false)
 	private Integer useGender;
 	
-	@ColumnDefault("'USER'")  
-	private String useRole; 
+	@Column
+	@Enumerated(EnumType.STRING)
+	private RoleType useRole; 
 	
 	@Column(nullable = false,  unique = true)
 	private String useEmail;
@@ -60,6 +63,27 @@ public class User {
 	
 	@Column
     @Enumerated(EnumType.STRING)
-	private Provider provider;
+	private ProviderType providerType;
+	
+	public User(
+            String useId,
+            String useName,
+            String useNick,
+            String useEmail,
+            int useGender,
+            ProviderType providerType,
+            RoleType useRole,
+            Timestamp useCreated
+    ) {
+        this.useId = useId;
+        this.useName = useName;
+        this.useNick = useNick != null ? useNick : "Annonymous";
+        this.usePw = "NO_PASS";
+        this.useEmail = useEmail != null ? useEmail : "NO_EMAIL";
+        this.useGender = 0;
+        this.providerType = providerType;
+        this.useRole = useRole;
+        this.useCreated = useCreated;
+    }
 
 }

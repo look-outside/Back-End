@@ -30,11 +30,9 @@ public class ManagerController {
 
 	//회원 목록 전체 조회
 	@GetMapping("/user")
-	public ResponseDto<Page<User>> userList(@PageableDefault(size=5,sort="useCreated",direction = Sort.Direction.DESC ) Pageable pageable) { //가입 최근순 조회 5개
-		Page<User> user = managerService.userList(pageable);
-		user.getPageable();
-
-		return new ResponseDto<Page<User>>(HttpStatus.OK.value(),user);
+	public ResponseDto<Map<String, Object>> userList(@PageableDefault(size=5,sort="useCreated",direction = Sort.Direction.DESC ) Pageable pageable) { //가입 최근순 조회 5개
+		Map<String, Object> userList = managerService.userList(pageable);
+		return new ResponseDto<Map<String, Object>>(HttpStatus.OK.value(),userList);
 	}
 
 	//회원 권한 수정
