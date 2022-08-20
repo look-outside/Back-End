@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -23,6 +24,7 @@ import com.springboot.lookoutside.oauth.filter.TokenAuthenticationFilter;
 import com.springboot.lookoutside.oauth.handler.OAuth2AuthenticationFailureHandler;
 import com.springboot.lookoutside.oauth.handler.OAuth2AuthenticationSuccessHandler;
 import com.springboot.lookoutside.oauth.handler.TokenAccessDeniedHandler;
+import com.springboot.lookoutside.oauth.repository.AuthUserRepository;
 import com.springboot.lookoutside.oauth.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.springboot.lookoutside.oauth.repository.UserRefreshTokenRepository;
 import com.springboot.lookoutside.oauth.service.CustomOAuth2UserService;
@@ -42,6 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final CustomOAuth2UserService oAuth2UserService;
     private final TokenAccessDeniedHandler tokenAccessDeniedHandler;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
+    private final AuthUserRepository userRepository;
 
     /*
     * UserDetailsService 설정
@@ -134,7 +137,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 tokenProvider,
                 appProperties,
                 userRefreshTokenRepository,
-                oAuth2AuthorizationRequestBasedOnCookieRepository()
+                oAuth2AuthorizationRequestBasedOnCookieRepository(),
+                userRepository
         );
     }
 

@@ -68,7 +68,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         User user = new User(
                 userInfo.getUseId(),
                 userInfo.getUseName(),
-                "Annonymous",
+                userInfo.getUseName(),
                 userInfo.getUseEmail(),
                 0,
                 providerType,

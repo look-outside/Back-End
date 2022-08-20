@@ -26,42 +26,44 @@ spring:
             - email
             - profile
             
-        naver:
-          clientId: '{네이버 client-id}'
-          clientSecret: '{네이버 client-secret}'
-          clientAuthenticationMethod: post
-          authorizationGrantType: authorization_code
-          redirectUri: "{baseUrl}/{action}/oauth2/code/{registrationId}"
-          scope:
-            - nickname
-            - email
-            - profile_image
-          clientName: Naver
+          naver:
+            clientId: 9_C0ruxN71m8RM9THt3w
+            clientSecret: BnSdCIUL3C
+            clientAuthenticationMethod: post
+            authorizationGrantType: authorization_code
+            redirectUri: http://springbootlookoutside-env.eba-khrbrhmx.us-west-1.elasticbeanstalk.com/login/oauth2/code/naver
+            
+            scope:
+              - name
+              - nickname
+              - email
+              - profile_image
+            clientName: Naver
+            
+          kakao:
+            clientId: 21e829ac4ace5d64c36a3251b2e4d21e
+            clientSecret: JJzQF3heR0hySThDYVDya4hlBsJdtR83
+            clientAuthenticationMethod: post
+            authorizationGrantType: authorization_code
+            redirectUri: http://springbootlookoutside-env.eba-khrbrhmx.us-west-1.elasticbeanstalk.com/login/oauth2/code/kakao
+            scope:
+              - profile_nickname
+              - profile_image
+              - account_email
+            clientName: Kakao
           
-        kakao:
-          clientId: '{카카오 client-id}'
-          clientSecret: '{카카오 client-secret}'
-          clientAuthenticationMethod: post
-          authorizationGrantType: authorization_code
-          redirectUri: "{baseUrl}/{action}/oauth2/code/{registrationId}"
-          scope:
-            - profile_nickname
-            - profile_image
-            - account_email
-          clientName: Kakao
-          
-      # Provider 설정
-      provider:
-        naver:
-          authorizationUri: https://nid.naver.com/oauth2.0/authorize
-          tokenUri: https://nid.naver.com/oauth2.0/token
-          userInfoUri: https://openapi.naver.com/v1/nid/me
-          userNameAttribute: response
-        kakao:
-          authorizationUri: https://kauth.kakao.com/oauth/authorize
-          tokenUri: https://kauth.kakao.com/oauth/token
-          userInfoUri: https://kapi.kakao.com/v2/user/me
-          userNameAttribute: id
+        # Provider 설정
+        provider:
+          naver:
+            authorizationUri: https://nid.naver.com/oauth2.0/authorize
+            tokenUri: https://nid.naver.com/oauth2.0/token
+            userInfoUri: https://openapi.naver.com/v1/nid/me
+            userNameAttribute: response
+          kakao:
+            authorizationUri: https://kauth.kakao.com/oauth/authorize
+            tokenUri: https://kauth.kakao.com/oauth/token
+            userInfoUri: https://kapi.kakao.com/v2/user/me
+            userNameAttribute: id
 
 # cors 설정
 cors:
