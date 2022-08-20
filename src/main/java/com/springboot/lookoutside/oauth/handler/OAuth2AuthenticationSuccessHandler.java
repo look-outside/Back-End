@@ -10,11 +10,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.springboot.lookoutside.config.properties.AppProperties;
+import com.springboot.lookoutside.domain.User;
 import com.springboot.lookoutside.domain.UserRefreshToken;
 import com.springboot.lookoutside.oauth.entity.ProviderType;
 import com.springboot.lookoutside.oauth.entity.RoleType;
 import com.springboot.lookoutside.oauth.info.OAuth2UserInfo;
 import com.springboot.lookoutside.oauth.info.OAuth2UserInfoFactory;
+import com.springboot.lookoutside.oauth.repository.AuthUserRepository;
 import com.springboot.lookoutside.oauth.repository.OAuth2AuthorizationRequestBasedOnCookieRepository;
 import com.springboot.lookoutside.oauth.repository.UserRefreshTokenRepository;
 import com.springboot.lookoutside.oauth.token.AuthToken;
@@ -43,6 +45,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     private final AppProperties appProperties;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
     private final OAuth2AuthorizationRequestBasedOnCookieRepository authorizationRequestRepository;
+    
+    private final AuthUserRepository userRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -76,9 +80,13 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         RoleType roleType = hasAuthority(authorities, RoleType.ADMIN.getCode()) ? RoleType.ADMIN : RoleType.USER;
 
+        
+        User authuser = userRepository.findByUseId(userInfo.getUseId());
         Date now = new Date();
         AuthToken accessToken = tokenProvider.createAuthToken(
                 userInfo.getUseId(),
+                authuser.getUseNo(),
+                authuser.getUseNick(),
                 roleType.getCode(),
                 new Date(now.getTime() + appProperties.getAuth().getTokenExpiry())
         );

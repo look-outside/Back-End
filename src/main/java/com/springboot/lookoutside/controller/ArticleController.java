@@ -67,12 +67,12 @@ public class ArticleController {
 	}
 	
 	//마이페이지 - 댓글목록
-	@GetMapping("/reply/{useNo}")
-	public ResponseDto<List<ArticleReply>> replyListMypage(@PathVariable int useNo){
+		@GetMapping("/reply/{useNo}")
+	public ResponseDto<Map<String, Object>> replyListMypage(@PathVariable int useNo, @PageableDefault(size=5, sort="repNo", direction = Sort.Direction.DESC) Pageable pageable){
 		
-		List<ArticleReply> replyListMypage = articleReplyService.replyListMypage(useNo);
+		Map<String, Object> replyListMypage = articleReplyService.replyListMypage(useNo, pageable);
 		
-		return new ResponseDto<List<ArticleReply>>(HttpStatus.OK.value(), replyListMypage);		
+		return new ResponseDto<Map<String, Object>>(HttpStatus.OK.value(), replyListMypage);		
 	}
 
 	//게시물 작성 + 이미지 파일 첨부
@@ -157,7 +157,7 @@ public class ArticleController {
 	
 	//게시물 카테고리,지역별 조회
 	@GetMapping("/list/{artCategory}/{regNo}")
-	public ResponseDto<Map<String, Object>> articleListCate(@PathVariable int artCategory, @PathVariable String regNo, @PageableDefault(size=5, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
+	public ResponseDto<Map<String, Object>> articleListCate(@PathVariable int artCategory, @PathVariable String regNo, @PageableDefault(size=12, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
 		Map<String, Object> articleList = articleService.articleListCateRegNo(artCategory, regNo, pageable);
 		return new ResponseDto<Map<String, Object>>(HttpStatus.OK.value(), articleList);
 	}
@@ -206,6 +206,13 @@ public class ArticleController {
 		return new ResponseDto<List<ArticleReply>>(HttpStatus.OK.value(), replyList);
 					
 	}
-
+	
+	//오늘의 x 카테고리별 목록 조회 ( 모든지역 최근순)
+	@GetMapping("/category/{artCategory}")
+	public ResponseDto<Map<String, Object>> articleCategory(@PathVariable int artCategory, @PageableDefault(size=4, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
+		Map<String, Object> articleList = articleService.articleCategory(artCategory, pageable);
+		return new ResponseDto<Map<String, Object>>(HttpStatus.OK.value(), articleList);
+	}
+	
 
 }

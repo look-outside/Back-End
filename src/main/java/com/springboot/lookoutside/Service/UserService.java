@@ -23,6 +23,16 @@ public class UserService {
 	@Autowired
 	private BCryptPasswordEncoder encoder;
 
+	//로그인
+	@Transactional
+	public boolean signIn(User user) {
+		User persistance = userRepository.findByUseId(user.getUseId()).orElseThrow(() -> { 
+			return new IllegalArgumentException("존재하지 않는 아이디");
+		});
+		
+		return encoder.matches(user.getUsePw(), persistance.getUsePw());
+	}
+	
 	//회원가입
 	@Transactional
 	public void signUp(User user) {
@@ -105,7 +115,7 @@ public class UserService {
 		// select를 해서 User오브젝트를 DB로 부터 가져오는 이유는 영속화를 하기위함
 		// 영속화된 오브젝트를 변경하면 자동으로 DB에 update문 실행
 		//User persistance = userRepository.findByUseId(user.getUseId()).orElseThrow(() -> { //user.getUserId -> 세션에 올라와있는 Id이용
-		User persistance = userRepository.findByUseId(user.getUseId()).orElseThrow(() -> { //테스트용
+		User persistance = userRepository.findById(user.getUseNo()).orElseThrow(() -> { //테스트용
 			return new IllegalArgumentException("회원찾기 실패");
 		});
 		
@@ -126,6 +136,13 @@ public class UserService {
 		if(!(user.getUseNick() == null)) {
 			
 			persistance.setUseNick(user.getUseNick());
+			
+		}
+		
+		//성별 수정
+		if(!(user.getUseGender() == null)) {
+			
+			persistance.setUseGender(user.getUseGender());
 			
 		}
 

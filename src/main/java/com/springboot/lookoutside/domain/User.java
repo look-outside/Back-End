@@ -62,6 +62,7 @@ public class User {
 	private Timestamp useCreated;
 	
 	@Column
+	@ColumnDefault("'LOCAL'")
     @Enumerated(EnumType.STRING)
 	private ProviderType providerType;
 	

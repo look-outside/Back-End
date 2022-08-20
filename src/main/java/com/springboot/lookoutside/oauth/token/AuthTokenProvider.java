@@ -29,11 +29,13 @@ public class AuthTokenProvider {
     }
 
     public AuthToken createAuthToken(String id, Date expiry) {
+    	System.out.println("test1");
         return new AuthToken(id, expiry, key);
     }
 
-    public AuthToken createAuthToken(String id, String role, Date expiry) {
-        return new AuthToken(id, role, expiry, key);
+    public AuthToken createAuthToken(String id, int useNo, String useNick, String role, Date expiry) {
+    	System.out.println("test2");
+        return new AuthToken(id, useNo, useNick, role, expiry, key);
     }
 
     public AuthToken convertAuthToken(String token) {

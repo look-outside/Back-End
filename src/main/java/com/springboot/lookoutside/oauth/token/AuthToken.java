@@ -27,6 +27,16 @@ public class AuthToken {
         this.key = key;
         this.token = createAuthToken(id, role, expiry);
     }
+    
+    AuthToken(String id, int useNo, String role, Date expiry, Key key) {
+        this.key = key;
+        this.token = createAuthToken(id, useNo, role, expiry);
+    }
+    
+    AuthToken(String id, int useNo, String useNick, String role, Date expiry, Key key) {
+        this.key = key;
+        this.token = createAuthToken(id, useNo, useNick, role, expiry);
+    }
 
     private String createAuthToken(String id, Date expiry) {
         return Jwts.builder()
@@ -39,6 +49,27 @@ public class AuthToken {
     private String createAuthToken(String id, String role, Date expiry) {
         return Jwts.builder()
                 .setSubject(id)
+                .claim(AUTHORITIES_KEY, role)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .setExpiration(expiry)
+                .compact();
+    }
+    
+    private String createAuthToken(String id, int useNo, String role, Date expiry) {
+        return Jwts.builder()
+                .setSubject(id)
+                .claim("useNo", useNo)
+                .claim(AUTHORITIES_KEY, role)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .setExpiration(expiry)
+                .compact();
+    }
+    
+    private String createAuthToken(String id, int useNo, String useNick ,String role, Date expiry) {
+        return Jwts.builder()
+                .setSubject(id)
+                .claim("useNo", useNo)
+                .claim("useNick", useNick)
                 .claim(AUTHORITIES_KEY, role)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .setExpiration(expiry)

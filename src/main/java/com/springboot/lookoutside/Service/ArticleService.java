@@ -207,5 +207,33 @@ public class ArticleService {
 		return article;
 	}
 	
+	//카테고리 게시물 목록 조회
+		@Transactional
+		public Map<String, Object> articleCategory(int artCategory, Pageable pageable){
+
+			Page<ArticleMapping> articlePage = articleRepository.findAllByArtCategory(artCategory, pageable);
+			
+			int numberOfElements = articlePage.getNumberOfElements();
+			long totalElements = articlePage.getTotalElements();
+			int number = articlePage.getNumber();
+			int totalPages = articlePage.getTotalPages();
+			int size = articlePage.getSize();
+			
+			Map<String, Object> pageAble = new HashMap<String, Object>();
+			
+			pageAble.put("numberOfElements", numberOfElements);
+			pageAble.put("totalElements", totalElements);
+			pageAble.put("number", number);
+			pageAble.put("totalPages", totalPages);
+			pageAble.put("size", size);
+			pageAble.put("offset", articlePage.getPageable().getOffset());
+			
+			Map<String, Object> article = new HashMap<String, Object>();
+			
+			article.put("list", articlePage.getContent());
+			article.put("pageable", pageAble);
+			
+			return article;
+		}
 
 }
