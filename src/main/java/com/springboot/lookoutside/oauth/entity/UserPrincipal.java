@@ -23,7 +23,8 @@ import java.util.Map;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class UserPrincipal implements OAuth2User, UserDetails, OidcUser {
-    private final String useId;
+    
+	private final String useId;
     private final String usePw;
     private final String useName;
     private final ProviderType providerType;
@@ -93,9 +94,9 @@ public class UserPrincipal implements OAuth2User, UserDetails, OidcUser {
 
     public static UserPrincipal create(User user) {
         return new UserPrincipal(
+        		user.getUseId(),
+        		user.getUsePw(),
         		user.getUseName(),
-                user.getUseId(),
-                user.getUsePw(),
                 user.getProviderType(),
                 RoleType.USER,
                 Collections.singletonList(new SimpleGrantedAuthority(RoleType.USER.getCode()))
