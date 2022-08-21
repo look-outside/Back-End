@@ -9,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import com.springboot.lookoutside.common.ApiResponse;
@@ -39,7 +40,7 @@ public class AuthController {
     private final AuthTokenProvider tokenProvider;
     private final AuthenticationManager authenticationManager;
     private final UserRefreshTokenRepository userRefreshTokenRepository;
-	private final BCryptPasswordEncoder encoder;
+	private final PasswordEncoder encoder;
 
     private final AuthUserRepository userRepository;
     
@@ -55,11 +56,12 @@ public class AuthController {
     	System.out.println(authReqModel.getUsePw());
     	System.out.println(persistance.getUsePw());
     	System.out.println(persistance.getProviderType());
+    	System.out.println(encoder.matches(authReqModel.getUsePw(), persistance.getUsePw()));
     	
-    	if(encoder.matches(authReqModel.getUsePw(), persistance.getUsePw())) {
+    	
     		System.out.println("로그인 테스트2");
     		UsernamePasswordAuthenticationToken authenticationToken =
-                    new UsernamePasswordAuthenticationToken(persistance.getUseId(), persistance.getUsePw());    		
+                    new UsernamePasswordAuthenticationToken(persistance.getUseId(), authReqModel.getUsePw());
     		System.out.println(authenticationToken);
     		System.out.println("로그인 테스트3");
     		Authentication authentication = authenticationManager.authenticate(authenticationToken);
@@ -101,9 +103,7 @@ public class AuthController {
             CookieUtil.addCookie(response, REFRESH_TOKEN, refreshToken.getToken(), cookieMaxAge);
             return ApiResponse.success("token", accessToken.getToken());
             
-    	}else {
-    		return ApiResponse.fail();
-    	}
+    
         
 
     }
