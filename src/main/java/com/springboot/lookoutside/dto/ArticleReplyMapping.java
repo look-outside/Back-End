@@ -12,7 +12,7 @@ public interface ArticleReplyMapping {
 	
 	int getRepNo();
 	
-	//String getUseNick();
+	String getUseNick();
 	
 	String getRepContents();
 	

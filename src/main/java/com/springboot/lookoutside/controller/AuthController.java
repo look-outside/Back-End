@@ -101,10 +101,7 @@ public class AuthController {
             int cookieMaxAge = (int) refreshTokenExpiry / 60;
             CookieUtil.deleteCookie(request, response, REFRESH_TOKEN);
             CookieUtil.addCookie(response, REFRESH_TOKEN, refreshToken.getToken(), cookieMaxAge);
-            return ApiResponse.success("token", accessToken.getToken());
-            
-    
-        
+            return ApiResponse.success("token", accessToken.getToken());       
 
     }
 

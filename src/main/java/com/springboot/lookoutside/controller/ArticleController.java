@@ -28,6 +28,7 @@ import com.springboot.lookoutside.domain.Article;
 import com.springboot.lookoutside.domain.ArticleReply;
 import com.springboot.lookoutside.dto.ArticleDto;
 import com.springboot.lookoutside.dto.ArticleMapping;
+import com.springboot.lookoutside.dto.ArticleReplyMapping;
 import com.springboot.lookoutside.dto.ResponseDto;
 import com.springboot.lookoutside.service.ArticleImgService;
 import com.springboot.lookoutside.service.ArticleReplyService;
@@ -58,20 +59,20 @@ public class ArticleController {
 		System.out.println("글 작성 페이지");
 		return "article/upload.html";
 	}
-	
+
 	//내가 쓴 게시물 목록
 	@GetMapping("/list/{useNo}")
 	public ResponseDto<Map<String, Object>> articleList(@PathVariable int useNo, @PageableDefault(size=5, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
 		Map<String, Object> articleList = articleService.articleList(useNo, pageable);
 		return new ResponseDto<Map<String, Object>>(HttpStatus.OK.value(), articleList);
 	}
-	
+
 	//마이페이지 - 댓글목록
-		@GetMapping("/reply/{useNo}")
+	@GetMapping("/reply/{useNo}")
 	public ResponseDto<Map<String, Object>> replyListMypage(@PathVariable int useNo, @PageableDefault(size=5, sort="repNo", direction = Sort.Direction.DESC) Pageable pageable){
-		
+
 		Map<String, Object> replyListMypage = articleReplyService.replyListMypage(useNo, pageable);
-		
+
 		return new ResponseDto<Map<String, Object>>(HttpStatus.OK.value(), replyListMypage);		
 	}
 
@@ -82,7 +83,7 @@ public class ArticleController {
 		int artNo = articleService.savePost(articles);//이미지 파일 제외 데이터 저장
 
 		if(multipartFiles != null) {
-			
+
 			for(int i = 0; i < multipartFiles.length; i++) {
 
 				MultipartFile file = multipartFiles[i];
@@ -90,11 +91,11 @@ public class ArticleController {
 				articleImgService.saveImg(artNo,file);//이미지 파일 저장
 
 				System.out.println("게시물 올리기");
-				
+
 			}	
-			
+
 		}
-		
+
 		if(multipartFiles == null) {
 			articleImgService.nullImg(artNo);
 		}
@@ -112,16 +113,16 @@ public class ArticleController {
 		articleImgService.deleteImgPost(artNo);//이미지 파일 삭제
 
 		if(multipartFiles != null) {
-			
+
 			for(int i = 0; i < multipartFiles.length; i++) {
-				
+
 				MultipartFile file = multipartFiles[i];
-				
+
 				articleImgService.updateImg(artNo,file);//이미지 파일 저장\
-				
+
 				System.out.println("게시물 수정하기");
 			}	
-			
+
 		}
 
 		return new ResponseDto<String>(HttpStatus.OK.value(), update);
@@ -129,9 +130,9 @@ public class ArticleController {
 
 	//게시물 상세 조회 페이지
 	@GetMapping("/{artNo}")
-	public ResponseDto<Map<String, Object>> detail(@PathVariable int artNo) {
+	public ResponseDto<Map<String, Object>> detail(@PathVariable int artNo, @PageableDefault(size=5, sort="repCreated", direction = Sort.Direction.DESC) Pageable pageable) {
 
-		Map<String, Object> detail = articleService.detailPost(artNo);
+		Map<String, Object> detail = articleService.detailPost(artNo, pageable);
 		System.out.println("게시물 상세 페이지입니다.");
 
 		return new ResponseDto<Map<String, Object>>(HttpStatus.OK.value(), detail);
@@ -154,65 +155,65 @@ public class ArticleController {
 		return new ResponseDto<Page<Article>>(HttpStatus.OK.value(), articleList);
 
 	}
-	
+
 	//게시물 카테고리,지역별 조회
 	@GetMapping("/list/{artCategory}/{regNo}")
 	public ResponseDto<Map<String, Object>> articleListCate(@PathVariable int artCategory, @PathVariable String regNo, @PageableDefault(size=12, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
 		Map<String, Object> articleList = articleService.articleListCateRegNo(artCategory, regNo, pageable);
 		return new ResponseDto<Map<String, Object>>(HttpStatus.OK.value(), articleList);
 	}
-	
+
 
 	//댓글 등록
-	@PostMapping("/{artNo}/reply")
-	public ResponseDto<String> saveReply(@RequestBody ArticleReply articleReply) {
-			
-		String saveReply = articleReplyService.saveReply(articleReply);
+	@PostMapping("/reply")
+	public ResponseDto<ArticleReplyMapping> saveReply(@RequestBody ArticleReply articleReply) {
+
+		ArticleReplyMapping saveReply = articleReplyService.saveReply(articleReply);
 		System.out.println("controller : 댓글 쓰기");
-			
-		return new ResponseDto<String>(HttpStatus.OK.value(), saveReply);
-			
+
+		return new ResponseDto<ArticleReplyMapping>(HttpStatus.OK.value(), saveReply);
+
 	}
-		
+
 	//댓글 수정
-	@PutMapping("/{artNo}/reply/{repNo}")
-	public ResponseDto<Integer> updateReply(@PathVariable int repNo, @RequestBody ArticleReply articleReply) {
-				
-		articleReplyService.updateReply(repNo, articleReply);
+	@PutMapping("/reply/{repNo}")
+	public ResponseDto<ArticleReplyMapping> updateReply(@PathVariable int repNo, @RequestBody ArticleReply articleReply) {
+
+		ArticleReplyMapping updateReply = articleReplyService.updateReply(repNo, articleReply);
 		System.out.println("controller : 댓글 수정하기");
-		
-		return new ResponseDto<Integer>(HttpStatus.OK.value(), 1);
-				
+
+		return new ResponseDto<ArticleReplyMapping>(HttpStatus.OK.value(), updateReply);
+
 	}
-			
+
 	//댓글 삭제
-	@DeleteMapping("/{artNo}/reply/{repNo}")
+	@DeleteMapping("/reply/{repNo}")
 	public ResponseDto<Integer> deleteReply (@PathVariable int repNo) {
-				
+
 		articleReplyService.deleteReply(repNo);
 		System.out.println("controller : 댓글 삭제하기");
 
 		return new ResponseDto<Integer>(HttpStatus.OK.value(), 1);
-				
+
 	}
-	 
+
 	//댓글 목록
-	@GetMapping("/{artNo}/reply")
-	public ResponseDto<List<ArticleReply>> replyList (@PathVariable int artNo) {
-					
-		List<ArticleReply> replyList = articleReplyService.replyList(artNo);
+	@GetMapping("/replylist/{artNo}")
+	public ResponseDto<Map<String, Object>> replyList (@PathVariable int artNo, @PageableDefault(size=5, sort="repCreated", direction = Sort.Direction.DESC) Pageable pageable) {
+
+		Map<String, Object> replyList = articleReplyService.replyList(artNo, pageable);
 		System.out.println("controller : 댓글 목록 불러오기");
-		
-		return new ResponseDto<List<ArticleReply>>(HttpStatus.OK.value(), replyList);
-					
+
+		return new ResponseDto<Map<String, Object>>(HttpStatus.OK.value(), replyList);
+
 	}
-	
+
 	//오늘의 x 카테고리별 목록 조회 ( 모든지역 최근순)
 	@GetMapping("/category/{artCategory}")
 	public ResponseDto<Map<String, Object>> articleCategory(@PathVariable int artCategory, @PageableDefault(size=4, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
 		Map<String, Object> articleList = articleService.articleCategory(artCategory, pageable);
 		return new ResponseDto<Map<String, Object>>(HttpStatus.OK.value(), articleList);
 	}
-	
+
 
 }
