@@ -11,6 +11,11 @@ local.properties
 .loadpath
 .recommenders
 
+application.yml
+application-aws.yml
+application-datasource.yml
+application-oauth2.yml
+
 # External tool builders
 .externalToolBuilders/
 
