@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.spring.boot'
-version = '0.3.5-SNAPSHOT'
+version = '0.3.6-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 configurations {
@@ -27,6 +27,12 @@ dependencies {
 	implementation 'commons-io:commons-io:2.8.0'
     implementation 'commons-fileupload:commons-fileupload:1.4'
     implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+    
+    //s3
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+	implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.1000')
+	implementation 'com.amazonaws:aws-java-sdk-s3'
+	implementation group: 'org.apache.tika', name: 'tika-core', version: '1.26'
 
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
