@@ -6,6 +6,9 @@ build/
 !**/src/test/**/build/
 
 aws.yml
+application-aws.yml
+application-database.yml
+application-oauth2.yml
 
 ### STS ###
 .apt_generated
