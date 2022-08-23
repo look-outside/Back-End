@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
@@ -68,7 +69,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         User user = new User(
                 userInfo.getUseId(),
                 userInfo.getUseName(),
-                userInfo.getUseName(),
+                providerType+""+new Date().getTime(),
                 userInfo.getUseEmail(),
                 0,
                 providerType,
