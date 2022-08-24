@@ -1,5 +1,7 @@
 package com.springboot.lookoutside.controller;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -26,6 +29,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.springboot.lookoutside.domain.Article;
 import com.springboot.lookoutside.domain.ArticleReply;
+import com.springboot.lookoutside.domain.AwsS3;
 import com.springboot.lookoutside.dto.ArticleDto;
 import com.springboot.lookoutside.dto.ArticleMapping;
 import com.springboot.lookoutside.dto.ArticleReplyMapping;
@@ -33,6 +37,7 @@ import com.springboot.lookoutside.dto.ResponseDto;
 import com.springboot.lookoutside.service.ArticleImgService;
 import com.springboot.lookoutside.service.ArticleReplyService;
 import com.springboot.lookoutside.service.ArticleService;
+import com.springboot.lookoutside.service.AwsS3Service;
 
 import lombok.AllArgsConstructor;
 
@@ -40,7 +45,11 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/article")
 @AllArgsConstructor
 public class ArticleController {
-
+	
+	@Autowired
+	@Resource
+	private AwsS3Service awsS3Service;
+	
 	@Autowired
 	@Resource
 	private ArticleService articleService;
@@ -53,12 +62,6 @@ public class ArticleController {
 	@Resource
 	private ArticleImgService articleImgService;
 
-	//게시물 작성 페이지
-	@GetMapping("/post")
-	public String upload() {
-		System.out.println("글 작성 페이지");
-		return "article/upload.html";
-	}
 
 	//내가 쓴 게시물 목록
 	@GetMapping("/list/{useNo}")
@@ -83,17 +86,17 @@ public class ArticleController {
 		int artNo = articleService.savePost(articles);//이미지 파일 제외 데이터 저장
 
 		if(multipartFiles != null) {
-
+			
 			for(int i = 0; i < multipartFiles.length; i++) {
 
 				MultipartFile file = multipartFiles[i];
 
-				articleImgService.saveImg(artNo,file);//이미지 파일 저장
+				AwsS3 S3 = awsS3Service.upload(file,"images");//이미지 파일 저장
+				
+				articleImgService.saveImg(artNo, S3.getKey(), S3.getPath(),  multipartFiles[i].getOriginalFilename());//이미지 파일 data 저장
 
-				System.out.println("게시물 올리기");
-
-			}	
-
+				System.out.println("게시물 올리기");					
+			}				
 		}
 
 		if(multipartFiles == null) {
@@ -215,5 +218,57 @@ public class ArticleController {
 		return new ResponseDto<Map<String, Object>>(HttpStatus.OK.value(), articleList);
 	}
 
+	//오늘의 x 카테고리별 목록 조회 ( 모든지역 최근순)
+	@GetMapping("/searchtest")
+	public ResponseDto<Map<String, Object>> searchtest(int artCategory, String type, Optional<String> keyword, @PageableDefault(size=4, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
+		Map<String, Object> articleList = articleService.search(artCategory, type, keyword, pageable);
+		return new ResponseDto<Map<String, Object>>(HttpStatus.OK.value(), articleList);
+	}
+	
+	//게시물 작성 + 이미지 파일 첨부
+	@PostMapping("/testpost")
+	public ResponseDto<Integer> testpost(String[] multipartFiles, String articles) throws Exception{
 
+		int artNo = articleService.savePost(articles);//이미지 파일 제외 데이터 저장
+
+		if(multipartFiles != null) {
+			
+			for(int i = 0; i < multipartFiles.length; i++) {
+
+				String file = multipartFiles[i];
+				
+				articleImgService.testImg(artNo, file);//이미지 파일 data 저장
+			
+			}
+			
+		}
+
+		if(multipartFiles == null) {
+			articleImgService.nullImg(artNo);
+		}
+
+		return new ResponseDto<Integer>(HttpStatus.OK.value(), 1);
+
+	}
+	
+	//파일만 업로드
+	@PostMapping("/testupload")
+    public ResponseDto<List<String>> testupload(@RequestPart("multipartFiles") MultipartFile[] multipartFiles) throws IOException {
+
+		List<String> path = new ArrayList<String>();
+		
+		for(int i = 0; i < multipartFiles.length; i++) {
+
+			MultipartFile file = multipartFiles[i];
+
+			AwsS3 S3 = awsS3Service.upload(file,"temporary");//이미지 파일 저장
+			
+			path.add(S3.getPath());
+			
+		}
+		
+		return new ResponseDto<List<String>>(HttpStatus.OK.value(), path);
+		
+    }
+	
 }
