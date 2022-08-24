@@ -20,4 +20,5 @@ public interface ArticleImgRepository extends JpaRepository<ArticleImg, Integer>
 	//게시물에 대한 사진 불러오기
 	List<ArticleImg> findAllByArtNo(int artNo);
 	
+	ArticleImg findByArtNoAndImgNo(int artNo, int imgNo); 
 }

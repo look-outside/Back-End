@@ -93,6 +93,7 @@ public class ArticleService {
 
 			e.printStackTrace();
 		}
+
 		System.out.println(article.getArtContents());
 
 		articleRepository.save(article);
@@ -165,13 +166,13 @@ public class ArticleService {
 
 		//댓글
 		Page<ArticleReplyMapping> articleReply = articleReplyRepository.findAllByArtNo(artNo, pageable);
-		
+
 		int numberOfElements = articleReply.getNumberOfElements();
 		long totalElements = articleReply.getTotalElements();
 		int number = articleReply.getNumber();
 		int totalPages = articleReply.getTotalPages();
 		int size = articleReply.getSize();
-		
+
 		Map<String, Object> pageAble = new HashMap<String, Object>();
 
 		pageAble.put("numberOfElements", numberOfElements);
@@ -180,12 +181,12 @@ public class ArticleService {
 		pageAble.put("totalPages", totalPages);
 		pageAble.put("size", size);
 		pageAble.put("offset", articleReply.getPageable().getOffset());
-		
+
 		Map<String, Object> articleReplylist = new HashMap<String, Object>();
-		
+
 		articleReplylist.put("list", articleReply.getContent());
 		articleReplylist.put("pageable", pageAble);
-		
+
 		//지역
 		Region region = regionRepository.findByRegNo(regNo);
 
@@ -258,6 +259,72 @@ public class ArticleService {
 		article.put("pageable", pageAble);
 
 		return article;
+	}
+
+	//검색 테스트
+	@Transactional
+	public Map<String, Object> search(int artCategory, String type, Optional<String> keyword, Pageable pageable){
+
+		if (type.equals("artSubject")) {
+
+			Page<ArticleMapping> searchResult = articleRepository.searchSubject(artCategory, keyword, pageable);
+
+			int numberOfElements = searchResult.getNumberOfElements();
+			long totalElements = searchResult.getTotalElements();
+			int number = searchResult.getNumber();
+			int totalPages = searchResult.getTotalPages();
+			int size = searchResult.getSize();
+
+			Map<String, Object> pageAble = new HashMap<String, Object>();
+
+			pageAble.put("numberOfElements", numberOfElements);
+			pageAble.put("totalElements", totalElements);
+			pageAble.put("number", number);
+			pageAble.put("totalPages", totalPages);
+			pageAble.put("size", size);
+			pageAble.put("offset", searchResult.getPageable().getOffset());
+
+			Map<String, Object> article = new HashMap<String, Object>();
+
+			article.put("list", searchResult.getContent());
+			article.put("pageable", pageAble);
+
+			return article;
+
+		}
+
+		else if(type.equals("artContents")) {
+
+			Page<ArticleMapping> searchResult = articleRepository.searchContents(artCategory, keyword, pageable);
+
+			int numberOfElements = searchResult.getNumberOfElements();
+			long totalElements = searchResult.getTotalElements();
+			int number = searchResult.getNumber();
+			int totalPages = searchResult.getTotalPages();
+			int size = searchResult.getSize();
+
+			Map<String, Object> pageAble = new HashMap<String, Object>();
+
+			pageAble.put("numberOfElements", numberOfElements);
+			pageAble.put("totalElements", totalElements);
+			pageAble.put("number", number);
+			pageAble.put("totalPages", totalPages);
+			pageAble.put("size", size);
+			pageAble.put("offset", searchResult.getPageable().getOffset());
+
+			Map<String, Object> article = new HashMap<String, Object>();
+
+			article.put("list", searchResult.getContent());
+			article.put("pageable", pageAble);
+
+			return article;
+
+		}else {
+			
+			return null;
+			
+		}
+
 	}
 
 }

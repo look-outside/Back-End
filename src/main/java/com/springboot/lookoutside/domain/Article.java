@@ -45,7 +45,7 @@ public class Article{
 	@Column(nullable = false)
 	private String artSubject;
 	
-	@Column(nullable = false)
+	@Column(length = 4000)
 	private String artContents;
 	
 	@JsonFormat(pattern = "YY.MM.dd HH:mm:ss", timezone = "Asia/Seoul")

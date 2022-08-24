@@ -1,9 +1,12 @@
 package com.springboot.lookoutside.service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,11 +24,9 @@ public class UserService {
 	@Autowired
 	private UserRepository userRepository;
 
-//	@Autowired
-//	private BCryptPasswordEncoder encoder;
-	
 	@Autowired
 	private PasswordEncoder encoder;
+	
 
 	//로그인
 	@Transactional
