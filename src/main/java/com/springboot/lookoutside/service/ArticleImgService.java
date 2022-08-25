@@ -123,22 +123,9 @@ public class ArticleImgService {
 	}
 	
 	@Transactional
-	public String testImg(int artNo, String file) {
+	public String testImg(int artNo, String imgSave, String originName, String path) {
 		
 		ArticleImg articleImg = new ArticleImg() ;
-		try {
-			articleImg = new ObjectMapper().readValue(file, ArticleImg.class);
-		} catch (JsonMappingException e) {
-
-			e.printStackTrace();
-		} catch (JsonProcessingException e) {
-
-			e.printStackTrace();
-		}
-		
-		String imgSave = articleImg.getImgPath().replace("https://elasticbeanstalk-us-west-1-616077318706.s3.us-west-1.amazonaws.com/images/", ""); 
-		String originName = articleImg.getImgOrigin();
-		String path = articleImg.getImgPath();
 		
 		articleImg.setImgSave(imgSave);
 		articleImg.setImgOrigin(originName); 

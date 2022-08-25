@@ -63,7 +63,7 @@ public class UserService {
 	//비밀번호 확인
 	@Transactional
 	public boolean checkMyPw(User user) {
-		User persistance = userRepository.findByUseId(user.getUseId()).orElseThrow(() -> { 
+		User persistance = userRepository.findByUseNo(user.getUseNo()).orElseThrow(() -> { 
 			return new IllegalArgumentException("존재하지 않는 아이디");
 		});
 		

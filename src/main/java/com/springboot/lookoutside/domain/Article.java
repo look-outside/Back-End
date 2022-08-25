@@ -39,10 +39,10 @@ public class Article{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int artNo;
 	
-	@Column(nullable = false)
+	@Column
 	private int useNo;
 	
-	@Column(nullable = false)
+	@Column
 	private String artSubject;
 	
 	@Column(length = 4000)
@@ -53,13 +53,13 @@ public class Article{
 	@Column(updatable = false)
 	private Timestamp artCreated;
 	
-	@Column(nullable = false)
+	@Column
 	private int artCategory;
 	
-	@Column(nullable = false)
+	@Column
 	private int artWSelect;
 
-	@Column(nullable = false)
+	@Column
 	private String regNo;
 	
 }

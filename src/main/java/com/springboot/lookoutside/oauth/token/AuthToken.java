@@ -56,6 +56,7 @@ public class AuthToken {
     }
     
     private String createAuthToken(String id, int useNo, String role, Date expiry) {
+    	System.out.println("권한" + role);
         return Jwts.builder()
                 .setSubject(id)
                 .claim("useNo", useNo)
@@ -66,6 +67,7 @@ public class AuthToken {
     }
     
     private String createAuthToken(String id, int useNo, String useNick ,String role, Date expiry) {
+    	System.out.println("권한" + role);
         return Jwts.builder()
                 .setSubject(id)
                 .claim("useNo", useNo)

@@ -20,6 +20,7 @@ import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.CopyObjectRequest;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.springboot.lookoutside.domain.ArticleImg;
@@ -58,7 +59,7 @@ public class AwsS3Service {
                 .path(path)
                 .build();
     }
-
+	
     //파일명 생성
     private String randomFileName(File file, String dirName) {
         return dirName + "/" + UUID.randomUUID() + file.getName();
@@ -70,6 +71,7 @@ public class AwsS3Service {
                 .withCannedAcl(CannedAccessControlList.PublicRead));
         return getS3(bucket, fileName);
     }
+    
 
     //URL 가져오기
     private String getS3(String bucket, String fileName) {
@@ -124,6 +126,19 @@ public class AwsS3Service {
         );
     	amazonS3.deleteObject(bucket, awsS3.getKey());
     }
+    
+ 	//옮기기
+    public void moveTo(String sourceKey, String destinationKey){
+    	CopyObjectRequest copy = new CopyObjectRequest(bucket, sourceKey, bucket, destinationKey);
+    	
+    	copy.withCannedAccessControlList(CannedAccessControlList.PublicRead);
+    	
+    	amazonS3.copyObject(copy);
+    	
+    	amazonS3.deleteObject(bucket, sourceKey);
+    }
+    
+
     
     /**
      * 파일명이 한글인 경우 URL encode이 필요함.

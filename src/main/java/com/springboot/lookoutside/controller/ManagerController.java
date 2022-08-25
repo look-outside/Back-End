@@ -37,9 +37,9 @@ public class ManagerController {
 
 	//회원 권한 수정
 	@PutMapping("/user/{useNo}")
-	public ResponseDto<Integer> changeRole(@PathVariable int useNo) {
-		managerService.changeRole(useNo);
-		return new ResponseDto<Integer>(HttpStatus.OK.value(),1);
+	public ResponseDto<String> changeRole(@PathVariable int useNo) {
+		String role = managerService.changeRole(useNo);
+		return new ResponseDto<String>(HttpStatus.OK.value(),role);
 	}
 
 	//회원 선택 삭제

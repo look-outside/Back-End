@@ -12,15 +12,25 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.springboot.lookoutside.domain.Article;
+import com.springboot.lookoutside.dto.ArticleDetail;
 import com.springboot.lookoutside.dto.ArticleMapping;
 
 @Repository
 public interface ArticleRepository extends JpaRepository<Article, Integer>, JpaSpecificationExecutor<Article>{
 	
-	 Optional<Article> findByArtNo(int artNo);
+	Optional<Article> findByArtNo(int artNo);
+	
+	@Query(value = "select a.*, u.useNick "
+			+ "from lo.Article a "
+			+ "join lo.User u on a.useNo = u.useNo "
+			+ "where a.artNo = ?1 ",
+			countQuery ="select a.*, u.useNick "
+					+ "from lo.Article a "
+					+ "join lo.User u on a.useNo = u.useNo "
+					+ "where a.artNo = ?1 ",
+			nativeQuery = true)
+	Optional<ArticleDetail> findDetail(int artNo);
 
-	//cotaining을 붙여주면 Like 검색이 된다 %{keyword}%
-	 //Optional<Article> findByTitleContaining(String keyword);
 //	Page<Article> findByArtSubjectContaining(Pageable pageable,String keyword);//게시물 제목으로 검색
     Page<Article> findByArtSubjectContainingAndArtCategory(Pageable pageable,String keyword, Optional<Integer> artCategory);
 	Page<Article> findByArtContentsContainingAndArtCategory(Pageable pageable,String keyword, int artCategory);
