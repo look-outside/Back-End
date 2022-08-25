@@ -20,6 +20,7 @@ import com.springboot.lookoutside.domain.ArticleImg;
 import com.springboot.lookoutside.domain.ArticleReply;
 import com.springboot.lookoutside.domain.Region;
 import com.springboot.lookoutside.domain.User;
+import com.springboot.lookoutside.dto.ArticleDetail;
 import com.springboot.lookoutside.dto.ArticleMapping;
 import com.springboot.lookoutside.dto.ArticleReplyMapping;
 import com.springboot.lookoutside.repository.ArticleImgRepository;
@@ -151,7 +152,7 @@ public class ArticleService {
 	//게시물 상세 페이지
 	public Map<String, Object> detailPost(int artNo , Pageable pageable) {
 
-		Article article = articleRepository.findByArtNo(artNo).orElseThrow(() -> {
+		ArticleDetail article = articleRepository.findDetail(artNo).orElseThrow(() -> {
 
 			return new IllegalArgumentException("0");
 
@@ -159,33 +160,8 @@ public class ArticleService {
 
 		String regNo = article.getRegNo();
 
-		User user = userRepository.findByUseNo2(article.getUseNo());
-
 		//게시물 이미지
 		List<ArticleImg> articleImg = articleImgRepository.findAllByArtNo(artNo);
-
-		//댓글
-		Page<ArticleReplyMapping> articleReply = articleReplyRepository.findAllByArtNo(artNo, pageable);
-
-		int numberOfElements = articleReply.getNumberOfElements();
-		long totalElements = articleReply.getTotalElements();
-		int number = articleReply.getNumber();
-		int totalPages = articleReply.getTotalPages();
-		int size = articleReply.getSize();
-
-		Map<String, Object> pageAble = new HashMap<String, Object>();
-
-		pageAble.put("numberOfElements", numberOfElements);
-		pageAble.put("totalElements", totalElements);
-		pageAble.put("number", number);
-		pageAble.put("totalPages", totalPages);
-		pageAble.put("size", size);
-		pageAble.put("offset", articleReply.getPageable().getOffset());
-
-		Map<String, Object> articleReplylist = new HashMap<String, Object>();
-
-		articleReplylist.put("list", articleReply.getContent());
-		articleReplylist.put("pageable", pageAble);
 
 		//지역
 		Region region = regionRepository.findByRegNo(regNo);
@@ -195,9 +171,6 @@ public class ArticleService {
 		detail.put("article", article);
 		detail.put("region", region);
 		detail.put("articleImg", articleImg);
-		detail.put("articleReply",articleReplylist);
-
-		//System.out.println(articleRepository.findAllByRegNoQuery(regNo));
 
 		return detail;
 

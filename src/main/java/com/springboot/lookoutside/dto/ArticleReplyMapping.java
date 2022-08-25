@@ -16,6 +16,8 @@ public interface ArticleReplyMapping {
 	
 	String getRepContents();
 	
+	int getArtCategory();
+	
 	@JsonFormat(pattern = "YY.MM.dd HH:mm:ss", timezone = "Asia/Seoul")
 	Timestamp getRepCreated();
 	

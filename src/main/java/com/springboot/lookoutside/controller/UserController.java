@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.annotation.RequestScope;
 
 import com.springboot.lookoutside.common.ApiResponse;
 import com.springboot.lookoutside.config.properties.AppProperties;
@@ -60,37 +61,32 @@ public class UserController {
 
 	private final static long THREE_DAYS_MSEC = 259200000;
 	private final static String REFRESH_TOKEN = "refresh_token";
-
+	
 	@PostMapping("/sign-in")
 	public ApiResponse login(HttpServletRequest request, HttpServletResponse response, @RequestBody AuthReqModel authReqModel) {
 
 		User persistance = userRepository.findByUseId(authReqModel.getUseId());
 
-		System.out.println("로그인 테스트");
-		System.out.println(authReqModel.getUsePw());
-		System.out.println(persistance.getUsePw());
-		System.out.println(persistance.getProviderType());
+		System.out.println(authReqModel.getUseId() +" : " + persistance.getUseRole());
 		System.out.println(encoder.matches(authReqModel.getUsePw(), persistance.getUsePw()));
 
-		System.out.println("로그인 테스트2");
 		UsernamePasswordAuthenticationToken authenticationToken =
 				new UsernamePasswordAuthenticationToken(persistance.getUseId(), authReqModel.getUsePw());
 		System.out.println(authenticationToken);
-		System.out.println("로그인 테스트3");
+
 		Authentication authentication = authenticationManager.authenticate(authenticationToken);
 
-		System.out.println("로그인 테스트4");
 		String useId = authReqModel.getUseId();
 
 		User user = userRepository.findByUseId(useId);
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-
+		
 		Date now = new Date();
 		AuthToken accessToken = tokenProvider.createAuthToken(
 				useId,
 				user.getUseNo(),
 				user.getUseNick(),
-				((UserPrincipal) authentication.getPrincipal()).getRoleType().getCode(),
+				user.getUseRole().getCode(),
 				new Date(now.getTime() + appProperties.getAuth().getTokenExpiry())
 				);
 
@@ -221,7 +217,7 @@ public class UserController {
 		return new ResponseDto<Optional<User>>(HttpStatus.OK.value(), userService.myPageInfo(useNo));
 	}
 
-	//비밀버호 복호화(확인)
+	//비밀번호 복호화(확인)
 	@PostMapping("/myPw")
 	public ResponseDto<Boolean> checkMyPw(@RequestBody User user) {
 		System.out.println("비밀번호 확인");

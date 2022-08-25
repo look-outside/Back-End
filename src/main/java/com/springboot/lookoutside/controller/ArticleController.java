@@ -27,7 +27,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.lookoutside.domain.Article;
+import com.springboot.lookoutside.domain.ArticleImg;
 import com.springboot.lookoutside.domain.ArticleReply;
 import com.springboot.lookoutside.domain.AwsS3;
 import com.springboot.lookoutside.dto.ArticleDto;
@@ -237,13 +239,32 @@ public class ArticleController {
 
 				String file = multipartFiles[i];
 				
-				articleImgService.testImg(artNo, file);//이미지 파일 data 저장
+				ArticleImg articleImg = new ArticleImg() ;
+				try {
+					articleImg = new ObjectMapper().readValue(file, ArticleImg.class);
+				} catch (JsonMappingException e) {
+
+					e.printStackTrace();
+				} catch (JsonProcessingException e) {
+
+					e.printStackTrace();
+				}
+				
+				String sourceKey = articleImg.getImgPath().replace("https://elasticbeanstalk-us-west-1-616077318706.s3.us-west-1.amazonaws.com/", ""); 
+				String destinationKey = sourceKey.replace("temporary", "images");
+				awsS3Service.moveTo(sourceKey, destinationKey);
+				
+				String imgSave = destinationKey.replace("https://elasticbeanstalk-us-west-1-616077318706.s3.us-west-1.amazonaws.com/images/", ""); 
+				String originName = articleImg.getImgOrigin();
+				String path = destinationKey;
+				
+				articleImgService.testImg(artNo, imgSave, originName, path);//이미지 파일 data 저장
 			
 			}
 			
 		}
 
-		if(multipartFiles == null) {
+		if(multipartFiles == null || multipartFiles.equals(null)) {
 			articleImgService.nullImg(artNo);
 		}
 
@@ -262,6 +283,30 @@ public class ArticleController {
 			MultipartFile file = multipartFiles[i];
 
 			AwsS3 S3 = awsS3Service.upload(file,"temporary");//이미지 파일 저장
+			
+			path.add(S3.getPath());
+			
+		}
+		
+		return new ResponseDto<List<String>>(HttpStatus.OK.value(), path);
+		
+    }
+	
+	//파일만 업로드
+	@PostMapping("/testmove")
+    public ResponseDto<List<String>> testmove(@RequestPart("multipartFiles") MultipartFile[] multipartFiles) throws IOException {
+
+		List<String> path = new ArrayList<String>();
+		
+		for(int i = 0; i < multipartFiles.length; i++) {
+
+			MultipartFile file = multipartFiles[i];
+
+			AwsS3 S3 = awsS3Service.upload(file,"temporary");//이미지 파일 저장
+			
+			String sourceKey = S3.getPath().replace("https://elasticbeanstalk-us-west-1-616077318706.s3.us-west-1.amazonaws.com/", ""); 
+			String destinationKey = sourceKey.replace("temporary", "images");
+			awsS3Service.moveTo(sourceKey, destinationKey);
 			
 			path.add(S3.getPath());
 			
