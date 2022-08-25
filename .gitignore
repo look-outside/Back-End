@@ -11,6 +11,8 @@ local.properties
 .loadpath
 .recommenders
 
+build/
+
 application.yml
 application-aws.yml
 application-datasource.yml
