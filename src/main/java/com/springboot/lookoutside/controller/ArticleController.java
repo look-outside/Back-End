@@ -2,6 +2,7 @@ package com.springboot.lookoutside.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -66,14 +67,14 @@ public class ArticleController {
 
 
 	//내가 쓴 게시물 목록
-	@GetMapping("/list/{useNo}")
+	@GetMapping("/myList/{useNo}")
 	public ResponseDto<Map<String, Object>> articleList(@PathVariable int useNo, @PageableDefault(size=5, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
 		Map<String, Object> articleList = articleService.articleList(useNo, pageable);
 		return new ResponseDto<Map<String, Object>>(HttpStatus.OK.value(), articleList);
 	}
 
 	//마이페이지 - 댓글목록
-	@GetMapping("/reply/{useNo}")
+	@GetMapping("/myReply/{useNo}")
 	public ResponseDto<Map<String, Object>> replyListMypage(@PathVariable int useNo, @PageableDefault(size=5, sort="repNo", direction = Sort.Direction.DESC) Pageable pageable){
 
 		Map<String, Object> replyListMypage = articleReplyService.replyListMypage(useNo, pageable);
@@ -162,8 +163,8 @@ public class ArticleController {
 	}
 
 	//게시물 카테고리,지역별 조회
-	@GetMapping("/list/{artCategory}/{regNo}")
-	public ResponseDto<Map<String, Object>> articleListCate(@PathVariable int artCategory, @PathVariable String regNo, @PageableDefault(size=12, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
+	@GetMapping("/list/{artCategory}")
+	public ResponseDto<Map<String, Object>> articleListCate(@PathVariable int artCategory, String regNo, @PageableDefault(size=12, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
 		Map<String, Object> articleList = articleService.articleListCateRegNo(artCategory, regNo, pageable);
 		return new ResponseDto<Map<String, Object>>(HttpStatus.OK.value(), articleList);
 	}
@@ -232,7 +233,7 @@ public class ArticleController {
 	public ResponseDto<Integer> testpost(String[] multipartFiles, String articles) throws Exception{
 
 		int artNo = articleService.savePost(articles);//이미지 파일 제외 데이터 저장
-
+		
 		if(multipartFiles != null) {
 			
 			for(int i = 0; i < multipartFiles.length; i++) {
@@ -240,26 +241,27 @@ public class ArticleController {
 				String file = multipartFiles[i];
 				
 				ArticleImg articleImg = new ArticleImg() ;
-				try {
-					articleImg = new ObjectMapper().readValue(file, ArticleImg.class);
-				} catch (JsonMappingException e) {
-
-					e.printStackTrace();
-				} catch (JsonProcessingException e) {
-
-					e.printStackTrace();
-				}
+				
+				System.out.println(file.toString());
+				
+				articleImg = new ObjectMapper().readValue(file, ArticleImg.class);
+				
+				System.out.println(articleImg);
+				System.out.println(articleImg.getImgPath());
 				
 				String sourceKey = articleImg.getImgPath().replace("https://elasticbeanstalk-us-west-1-616077318706.s3.us-west-1.amazonaws.com/", ""); 
 				String destinationKey = sourceKey.replace("temporary", "images");
+				
 				awsS3Service.moveTo(sourceKey, destinationKey);
 				
 				String imgSave = destinationKey.replace("https://elasticbeanstalk-us-west-1-616077318706.s3.us-west-1.amazonaws.com/images/", ""); 
-				String originName = articleImg.getImgOrigin();
-				String path = destinationKey;
+				String originName = destinationKey.substring(43);
+				String path = "https://elasticbeanstalk-us-west-1-616077318706.s3.us-west-1.amazonaws.com/"+destinationKey;
+				
+				System.out.println(path);
 				
 				articleImgService.testImg(artNo, imgSave, originName, path);//이미지 파일 data 저장
-			
+				
 			}
 			
 		}

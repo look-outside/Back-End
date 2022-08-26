@@ -40,7 +40,7 @@ public interface UserRepository extends JpaRepository<User, Integer>{ // <테이
 	Integer deleteByUseId(String useId);
 	Integer deleteByUseNo(int useNo);
 	
-	@Query(value = "select useId from lo.User where useEmail = ?1" , nativeQuery =true)
+	@Query(value = "select useId from lo.User where useEmail = ?1 and providerType = 'LOCAL'" , nativeQuery =true)
 	Optional<String> myId(String useEmail);
 	
 	

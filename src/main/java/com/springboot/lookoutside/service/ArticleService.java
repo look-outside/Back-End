@@ -82,20 +82,11 @@ public class ArticleService {
 
 	//게시물 등록
 	@Transactional
-	public int savePost(String articles) {
+	public int savePost(String articles) throws JsonMappingException,JsonProcessingException{
 
 		Article article = new Article() ;
-		try {
-			article = new ObjectMapper().readValue(articles, Article.class);
-		} catch (JsonMappingException e) {
-
-			e.printStackTrace();
-		} catch (JsonProcessingException e) {
-
-			e.printStackTrace();
-		}
-
-		System.out.println(article.getArtContents());
+		
+		article = new ObjectMapper().readValue(articles, Article.class);
 
 		articleRepository.save(article);
 
