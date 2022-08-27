@@ -26,9 +26,9 @@ public class ManagerService {
 	private ArticleRepository articleRepository;
 
 	//회원 목록 조회
-	public Map<String, Object> userList(Pageable pageable) {
-
-		Page<User> user = userRepository.findAll(pageable);
+	public Map<String, Object> userList(RoleType useRole, Pageable pageable) {
+		
+		Page<User> user = userRepository.findAllByUseRole(useRole, pageable);
 
 		int numberOfElements = user.getNumberOfElements();
 		long totalElements = user.getTotalElements();

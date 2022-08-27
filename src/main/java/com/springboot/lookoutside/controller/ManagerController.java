@@ -19,6 +19,7 @@ import com.springboot.lookoutside.domain.Article;
 import com.springboot.lookoutside.domain.User;
 import com.springboot.lookoutside.dto.ArticleMapping;
 import com.springboot.lookoutside.dto.ResponseDto;
+import com.springboot.lookoutside.oauth.entity.RoleType;
 import com.springboot.lookoutside.service.ManagerService;
 
 @RestController
@@ -30,8 +31,8 @@ public class ManagerController {
 
 	//회원 목록 전체 조회
 	@GetMapping("/user")
-	public ResponseDto<Map<String, Object>> userList(@PageableDefault(size=5,sort="useCreated",direction = Sort.Direction.DESC ) Pageable pageable) { //가입 최근순 조회 5개
-		Map<String, Object> userList = managerService.userList(pageable);
+	public ResponseDto<Map<String, Object>> userList(@PageableDefault(size=5,sort="useCreated",direction = Sort.Direction.DESC ) RoleType Role, Pageable pageable) { //가입 최근순 조회 5개		
+		Map<String, Object> userList = managerService.userList(Role, pageable);
 		return new ResponseDto<Map<String, Object>>(HttpStatus.OK.value(),userList);
 	}
 
@@ -58,7 +59,7 @@ public class ManagerController {
 
 	//게시물 카테고리별 목록 조회
 	@GetMapping("/article/{artCategory}")
-	public ResponseDto<Map<String, Object>> articleListCate(int artCategory, @PageableDefault(size=5, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
+	public ResponseDto<Map<String, Object>> articleListCate(@PathVariable int artCategory, @PageableDefault(size=5, sort="artNo", direction = Sort.Direction.DESC) Pageable pageable){
 		Map<String, Object> articleList = managerService.articleListCate(artCategory ,pageable);
 		return new ResponseDto<Map<String, Object>>(HttpStatus.OK.value(), articleList);
 	}

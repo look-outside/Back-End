@@ -2,11 +2,14 @@ package com.springboot.lookoutside.repository;
 
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.springboot.lookoutside.domain.User;
+import com.springboot.lookoutside.oauth.entity.RoleType;
 
 //DAO의 기능
 //자동 Bean등록
@@ -23,6 +26,8 @@ public interface UserRepository extends JpaRepository<User, Integer>{ // <테이
 	@Query(value="SELECT * FROM user WHERE use_id = ? AND use_pw = ?", nativeQuery =true)
 	User singIn(String use_id, String use_pw);
 	*/
+	
+	Page<User> findAllByUseRole(RoleType useRole, Pageable pageable);
 	
 	Optional<User> findByUseId(String useId);
 	Optional<User> findByUseEmail(String useEmail);
