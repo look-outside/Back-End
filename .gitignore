@@ -17,7 +17,6 @@ build/
 .classpath
 .project
 
-application.yml
 application-aws.yml
 application-datasource.yml
 application-oauth2.yml
