@@ -48,11 +48,11 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/article")
 @AllArgsConstructor
 public class ArticleController {
-	
+
 	@Autowired
 	@Resource
 	private AwsS3Service awsS3Service;
-	
+
 	@Autowired
 	@Resource
 	private ArticleService articleService;
@@ -82,27 +82,65 @@ public class ArticleController {
 		return new ResponseDto<Map<String, Object>>(HttpStatus.OK.value(), replyListMypage);		
 	}
 
+	//파일만 업로드
+	@PostMapping("/upload")
+	public ResponseDto<List<String>> upload(@RequestPart("multipartFiles") MultipartFile[] multipartFiles) throws IOException {
+
+		List<String> path = new ArrayList<String>();
+
+		for(int i = 0; i < multipartFiles.length; i++) {
+
+			MultipartFile file = multipartFiles[i];
+
+			AwsS3 S3 = awsS3Service.upload(file,"temporary");//이미지 파일 저장
+
+			path.add(S3.getPath());
+
+		}
+
+		return new ResponseDto<List<String>>(HttpStatus.OK.value(), path);
+
+	}
+
 	//게시물 작성 + 이미지 파일 첨부
 	@PostMapping("/post")
-	public ResponseDto<Integer> upload(MultipartFile[] multipartFiles, String articles) throws Exception{
+	public ResponseDto<Integer> post(String[] multipartFiles, String articles) throws Exception{
 
 		int artNo = articleService.savePost(articles);//이미지 파일 제외 데이터 저장
 
 		if(multipartFiles != null) {
-			
+
 			for(int i = 0; i < multipartFiles.length; i++) {
 
-				MultipartFile file = multipartFiles[i];
+				String file = multipartFiles[i];
 
-				AwsS3 S3 = awsS3Service.upload(file,"images");//이미지 파일 저장
-				
-				articleImgService.saveImg(artNo, S3.getKey(), S3.getPath(),  multipartFiles[i].getOriginalFilename());//이미지 파일 data 저장
+				ArticleImg articleImg = new ArticleImg() ;
 
-				System.out.println("게시물 올리기");					
-			}				
+				System.out.println(file.toString());
+
+				articleImg = new ObjectMapper().readValue(file, ArticleImg.class);
+
+				System.out.println(articleImg);
+				System.out.println(articleImg.getImgPath());
+
+				String sourceKey = articleImg.getImgPath().replace("https://elasticbeanstalk-us-west-1-616077318706.s3.us-west-1.amazonaws.com/", ""); 
+				String destinationKey = sourceKey.replace("temporary/", "images/");
+
+				awsS3Service.moveTo(sourceKey, destinationKey);
+
+				String imgSave = destinationKey.replace("https://elasticbeanstalk-us-west-1-616077318706.s3.us-west-1.amazonaws.com/images/", ""); 
+				String originName = destinationKey.substring(43);
+				String path = "https://elasticbeanstalk-us-west-1-616077318706.s3.us-west-1.amazonaws.com/"+destinationKey;
+
+				System.out.println(path);
+
+				articleImgService.testImg(artNo, imgSave, originName, path);//이미지 파일 data 저장
+
+			}
+
 		}
 
-		if(multipartFiles == null) {
+		if(multipartFiles == null || multipartFiles.equals(null)) {
 			articleImgService.nullImg(artNo);
 		}
 
@@ -110,25 +148,48 @@ public class ArticleController {
 
 	}
 
-	//게시물 수정 페이지
+	//게시물 수정 
 	@PutMapping("/{artNo}")
-	public ResponseDto<String> update(@PathVariable int artNo, MultipartFile[] multipartFiles, String articles) throws JsonMappingException, JsonProcessingException {
+	public ResponseDto<String> update(@PathVariable int artNo, String[] multipartFiles, String articles) throws JsonMappingException, JsonProcessingException {
 
 		String update = articleService.updatePost(artNo,articles);
 
-		articleImgService.deleteImgPost(artNo);//이미지 파일 삭제
+		articleImgService.deleteImgPost(artNo);//이미지 파일 DB 삭제
 
 		if(multipartFiles != null) {
 
 			for(int i = 0; i < multipartFiles.length; i++) {
 
-				MultipartFile file = multipartFiles[i];
+				String file = multipartFiles[i];
 
-				articleImgService.updateImg(artNo,file);//이미지 파일 저장\
+				ArticleImg articleImg = new ArticleImg() ;
 
-				System.out.println("게시물 수정하기");
-			}	
+				System.out.println(file.toString());
 
+				articleImg = new ObjectMapper().readValue(file, ArticleImg.class);
+
+				System.out.println(articleImg);
+				System.out.println(articleImg.getImgPath());
+
+				String sourceKey = articleImg.getImgPath().replace("https://elasticbeanstalk-us-west-1-616077318706.s3.us-west-1.amazonaws.com/", ""); 
+				String destinationKey = sourceKey.replace("temporary/", "images/");
+
+				awsS3Service.moveTo(sourceKey, destinationKey);
+
+				String imgSave = destinationKey.replace("https://elasticbeanstalk-us-west-1-616077318706.s3.us-west-1.amazonaws.com/images/", ""); 
+				String originName = destinationKey.substring(43);
+				String path = "https://elasticbeanstalk-us-west-1-616077318706.s3.us-west-1.amazonaws.com/"+destinationKey;
+
+				System.out.println(path);
+
+				articleImgService.testImg(artNo, imgSave, originName, path);//이미지 파일 data 저장
+
+			}
+
+		}
+
+		if(multipartFiles == null || multipartFiles.equals(null)) {
+			articleImgService.nullImg(artNo);
 		}
 
 		return new ResponseDto<String>(HttpStatus.OK.value(), update);
@@ -227,95 +288,5 @@ public class ArticleController {
 		Map<String, Object> articleList = articleService.search(artCategory, type, keyword, pageable);
 		return new ResponseDto<Map<String, Object>>(HttpStatus.OK.value(), articleList);
 	}
-	
-	//게시물 작성 + 이미지 파일 첨부
-	@PostMapping("/testpost")
-	public ResponseDto<Integer> testpost(String[] multipartFiles, String articles) throws Exception{
 
-		int artNo = articleService.savePost(articles);//이미지 파일 제외 데이터 저장
-		
-		if(multipartFiles != null) {
-			
-			for(int i = 0; i < multipartFiles.length; i++) {
-
-				String file = multipartFiles[i];
-				
-				ArticleImg articleImg = new ArticleImg() ;
-				
-				System.out.println(file.toString());
-				
-				articleImg = new ObjectMapper().readValue(file, ArticleImg.class);
-				
-				System.out.println(articleImg);
-				System.out.println(articleImg.getImgPath());
-				
-				String sourceKey = articleImg.getImgPath().replace("https://elasticbeanstalk-us-west-1-616077318706.s3.us-west-1.amazonaws.com/", ""); 
-				String destinationKey = sourceKey.replace("temporary", "images");
-				
-				awsS3Service.moveTo(sourceKey, destinationKey);
-				
-				String imgSave = destinationKey.replace("https://elasticbeanstalk-us-west-1-616077318706.s3.us-west-1.amazonaws.com/images/", ""); 
-				String originName = destinationKey.substring(43);
-				String path = "https://elasticbeanstalk-us-west-1-616077318706.s3.us-west-1.amazonaws.com/"+destinationKey;
-				
-				System.out.println(path);
-				
-				articleImgService.testImg(artNo, imgSave, originName, path);//이미지 파일 data 저장
-				
-			}
-			
-		}
-
-		if(multipartFiles == null || multipartFiles.equals(null)) {
-			articleImgService.nullImg(artNo);
-		}
-
-		return new ResponseDto<Integer>(HttpStatus.OK.value(), 1);
-
-	}
-	
-	//파일만 업로드
-	@PostMapping("/testupload")
-    public ResponseDto<List<String>> testupload(@RequestPart("multipartFiles") MultipartFile[] multipartFiles) throws IOException {
-
-		List<String> path = new ArrayList<String>();
-		
-		for(int i = 0; i < multipartFiles.length; i++) {
-
-			MultipartFile file = multipartFiles[i];
-
-			AwsS3 S3 = awsS3Service.upload(file,"temporary");//이미지 파일 저장
-			
-			path.add(S3.getPath());
-			
-		}
-		
-		return new ResponseDto<List<String>>(HttpStatus.OK.value(), path);
-		
-    }
-	
-	//파일만 업로드
-	@PostMapping("/testmove")
-    public ResponseDto<List<String>> testmove(@RequestPart("multipartFiles") MultipartFile[] multipartFiles) throws IOException {
-
-		List<String> path = new ArrayList<String>();
-		
-		for(int i = 0; i < multipartFiles.length; i++) {
-
-			MultipartFile file = multipartFiles[i];
-
-			AwsS3 S3 = awsS3Service.upload(file,"temporary");//이미지 파일 저장
-			
-			String sourceKey = S3.getPath().replace("https://elasticbeanstalk-us-west-1-616077318706.s3.us-west-1.amazonaws.com/", ""); 
-			String destinationKey = sourceKey.replace("temporary", "images");
-			awsS3Service.moveTo(sourceKey, destinationKey);
-			
-			path.add(S3.getPath());
-			
-		}
-		
-		return new ResponseDto<List<String>>(HttpStatus.OK.value(), path);
-		
-    }
-	
 }
