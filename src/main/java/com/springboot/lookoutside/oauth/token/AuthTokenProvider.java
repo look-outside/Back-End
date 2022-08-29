@@ -34,7 +34,6 @@ public class AuthTokenProvider {
     }
 
     public AuthToken createAuthToken(String id, int useNo, String useNick, String role, Date expiry) {
-    	System.out.println("권한22" + role);
         return new AuthToken(id, useNo, useNick, role, expiry, key);
     }
 

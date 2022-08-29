@@ -80,7 +80,6 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         RoleType roleType = hasAuthority(authorities, RoleType.ADMIN.getCode()) ? RoleType.ADMIN : RoleType.USER;
 
-        
         User authuser = userRepository.findByUseId(userInfo.getUseId());
         Date now = new Date();
         AuthToken accessToken = tokenProvider.createAuthToken(

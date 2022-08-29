@@ -97,7 +97,7 @@ public class AwsS3Service {
     }
 
     //삭제
-    public void remove(int artNo, String imgSave) {
+    public void remove(int artNo) {
     	
     	//imgNo 가져오기
     	int imgNo = articleImgRepository.findImgNo(artNo);

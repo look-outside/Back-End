@@ -66,9 +66,9 @@ public class AwsS3Controller {
     }
 
     @DeleteMapping("/{artNo}")
-    public ResponseDto<Integer> remove(@PathVariable("artNo") int artNo, String key) {
+    public ResponseDto<Integer> remove(@PathVariable("artNo") int artNo) {
         
-    	awsS3Service.remove(artNo, key);
+    	awsS3Service.remove(artNo);
     	articleService.deletePost(artNo); 
 		articleImgService.deleteImgPost(artNo);
     	
