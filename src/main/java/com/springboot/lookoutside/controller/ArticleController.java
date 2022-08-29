@@ -104,7 +104,7 @@ public class ArticleController {
 
 	//게시물 작성 + 이미지 파일 첨부
 	@PostMapping("/post")
-	public ResponseDto<Integer> post(String[] multipartFiles, String articles) throws Exception{
+	public ResponseDto<Integer> post(String[] multipartFiles, String[] deleteFiles, String articles) throws Exception{
 
 		int artNo = articleService.savePost(articles);//이미지 파일 제외 데이터 저장
 
@@ -128,20 +128,36 @@ public class ArticleController {
 
 				awsS3Service.moveTo(sourceKey, destinationKey);
 
-				String imgSave = destinationKey.replace("https://elasticbeanstalk-us-west-1-616077318706.s3.us-west-1.amazonaws.com/images/", ""); 
+				String imgSave = destinationKey.replace("images/", ""); 
 				String originName = destinationKey.substring(43);
 				String path = "https://elasticbeanstalk-us-west-1-616077318706.s3.us-west-1.amazonaws.com/"+destinationKey;
 
 				System.out.println(path);
 
-				articleImgService.testImg(artNo, imgSave, originName, path);//이미지 파일 data 저장
+				articleImgService.saveImg(artNo, imgSave, originName, path);//이미지 파일 data 저장
 
 			}
 
-		}
-
-		if(multipartFiles == null || multipartFiles.equals(null)) {
+		}else if(multipartFiles == null || multipartFiles.equals(null)) {
 			articleImgService.nullImg(artNo);
+		}
+		
+		if(deleteFiles != null) {
+
+			for(int i = 0; i < deleteFiles.length; i++) {
+
+				String deleteFile = deleteFiles[i];
+
+				ArticleImg articleImg = new ArticleImg() ;
+
+				articleImg = new ObjectMapper().readValue(deleteFile, ArticleImg.class);
+
+				String sourceKey = articleImg.getImgPath().replace("https://elasticbeanstalk-us-west-1-616077318706.s3.us-west-1.amazonaws.com/", ""); 
+
+				awsS3Service.delete(sourceKey);
+
+			}
+
 		}
 
 		return new ResponseDto<Integer>(HttpStatus.OK.value(), 1);
@@ -150,7 +166,7 @@ public class ArticleController {
 
 	//게시물 수정 
 	@PutMapping("/{artNo}")
-	public ResponseDto<String> update(@PathVariable int artNo, String[] multipartFiles, String articles) throws JsonMappingException, JsonProcessingException {
+	public ResponseDto<String> update(@PathVariable int artNo, String[] multipartFiles, String[] deleteFiles, String articles) throws JsonMappingException, JsonProcessingException {
 
 		String update = articleService.updatePost(artNo,articles);
 
@@ -174,25 +190,47 @@ public class ArticleController {
 				String sourceKey = articleImg.getImgPath().replace("https://elasticbeanstalk-us-west-1-616077318706.s3.us-west-1.amazonaws.com/", ""); 
 				String destinationKey = sourceKey.replace("temporary/", "images/");
 
-				awsS3Service.moveTo(sourceKey, destinationKey);
-
+				if(sourceKey.contains("temporary/")) {
+					
+					awsS3Service.moveTo(sourceKey, destinationKey);
+					
+				}
+				
 				String imgSave = destinationKey.replace("https://elasticbeanstalk-us-west-1-616077318706.s3.us-west-1.amazonaws.com/images/", ""); 
+				
 				String originName = destinationKey.substring(43);
 				String path = "https://elasticbeanstalk-us-west-1-616077318706.s3.us-west-1.amazonaws.com/"+destinationKey;
 
 				System.out.println(path);
 
-				articleImgService.testImg(artNo, imgSave, originName, path);//이미지 파일 data 저장
+				articleImgService.saveImg(artNo, imgSave, originName, path);//이미지 파일 data 저장
+
+			}
+
+		}else if(multipartFiles == null || multipartFiles.equals(null)) {
+			articleImgService.nullImg(artNo);
+		}
+		
+		if(deleteFiles != null) {
+
+			for(int i = 0; i < deleteFiles.length; i++) {
+
+				String file = deleteFiles[i];
+
+				ArticleImg articleImg = new ArticleImg() ;
+
+				articleImg = new ObjectMapper().readValue(file, ArticleImg.class);
+
+				String sourceKey = articleImg.getImgPath().replace("https://elasticbeanstalk-us-west-1-616077318706.s3.us-west-1.amazonaws.com/", ""); 
+
+				awsS3Service.delete(sourceKey);
 
 			}
 
 		}
 
-		if(multipartFiles == null || multipartFiles.equals(null)) {
-			articleImgService.nullImg(artNo);
-		}
-
 		return new ResponseDto<String>(HttpStatus.OK.value(), update);
+		
 	}
 
 	//게시물 상세 조회 페이지
@@ -206,14 +244,17 @@ public class ArticleController {
 	}
 
 	//삭제
-	@DeleteMapping("/{artNo}")
-	public ResponseDto<String> delete(@PathVariable("artNo") int artNo) {
-
-		String deleteArt = articleService.deletePost(artNo);
-		System.out.println("게시물 삭제하기");
-		return new ResponseDto<String>(HttpStatus.OK.value(), deleteArt);
-	}
-
+    @DeleteMapping("/{artNo}")
+    public ResponseDto<Integer> remove(@PathVariable("artNo") int artNo) {
+        
+    	awsS3Service.remove(artNo);
+    	articleService.deletePost(artNo); 
+		articleImgService.deleteImgPost(artNo);
+    	
+    	System.out.println("게시물 삭제하기");
+        return new ResponseDto<Integer>(HttpStatus.OK.value(), 1);
+    }
+	
 
 	//검색
 	@GetMapping("/search")
