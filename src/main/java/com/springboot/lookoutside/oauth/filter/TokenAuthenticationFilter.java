@@ -29,10 +29,12 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain)  throws ServletException, IOException {
 
         String tokenStr = HeaderUtil.getAccessToken(request);
+        
         AuthToken token = tokenProvider.convertAuthToken(tokenStr);
 
         if (token.validate()) {
             Authentication authentication = tokenProvider.getAuthentication(token);
+            
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 

@@ -1,6 +1,7 @@
 package com.springboot.lookoutside.controller;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.http.Cookie;
@@ -8,12 +9,19 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AccessTokenResponse;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -248,9 +256,12 @@ public class UserController {
 
 	//회원 탈퇴, 삭제
 	@DeleteMapping("/{useNo}")
-	public ResponseDto<String> deleteUser(@PathVariable int useNo) {
+	public ResponseDto<String> deleteUser(@PathVariable int useNo) throws Exception{
+
+		userService.leave(useNo); // 카카오 연동 해제
 		String result = userService.deleteUser(useNo);
+		
 		return new ResponseDto<String>(HttpStatus.OK.value(), result);
 	}
-
+	
 }

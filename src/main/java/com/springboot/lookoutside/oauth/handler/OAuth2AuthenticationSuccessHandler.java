@@ -1,6 +1,8 @@
 package com.springboot.lookoutside.oauth.handler;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
@@ -22,6 +24,7 @@ import com.springboot.lookoutside.oauth.repository.UserRefreshTokenRepository;
 import com.springboot.lookoutside.oauth.token.AuthToken;
 import com.springboot.lookoutside.oauth.token.AuthTokenProvider;
 import com.springboot.lookoutside.utils.CookieUtil;
+import com.springboot.lookoutside.utils.HeaderUtil;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.Cookie;
@@ -51,7 +54,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         String targetUrl = determineTargetUrl(request, response, authentication);
-
+        
         if (response.isCommitted()) {
             logger.debug("Response has already been committed. Unable to redirect to " + targetUrl);
             return;
@@ -111,7 +114,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
         CookieUtil.deleteCookie(request, response, REFRESH_TOKEN);
         CookieUtil.addCookie(response, REFRESH_TOKEN, refreshToken.getToken(), cookieMaxAge);
-      //response.addHeader("Authorization", "Bearer " + accessToken.getToken());
+        //response.addHeader("Sns", "Bearer " + authToken.get);
         
         return UriComponentsBuilder.fromUriString(targetUrl)
                 .queryParam("token", accessToken.getToken())
