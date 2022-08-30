@@ -6,9 +6,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 public interface ArticleReplyMapping {
 
-	//int getArtNo();
+	int getArtNo();
 	
-	//int getUseNo();
+	int getUseNo();
 	
 	int getRepNo();
 	

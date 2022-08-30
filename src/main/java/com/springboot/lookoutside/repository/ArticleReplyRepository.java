@@ -46,7 +46,7 @@ public interface ArticleReplyRepository extends JpaRepository<ArticleReply, Inte
 	Page<ArticleReplyMapping> findAllByArtNo(int artNo, Pageable pageable);
 	
 	//마이페이지 - 댓글 목록
-	@Query(value = "select u.useNick, ar.repNo, ar.repContents, ar.repCreated, a.artCategory "
+	@Query(value = "select u.useNick, ar.*, a.artCategory "
 			+ "from lo.ArticleReply ar "			
 			+ "join lo.User u on ar.useNo = u.useNo "
 			+ "join lo.Article a on ar.artNo = a.artNo "

@@ -1,17 +1,36 @@
 package com.springboot.lookoutside.service;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.apache.http.HttpResponse;
+
+import com.nimbusds.jose.shaded.json.JSONValue;
 import com.springboot.lookoutside.domain.User;
+import com.springboot.lookoutside.oauth.entity.ProviderType;
 import com.springboot.lookoutside.repository.UserRepository;
 
 //서비스 쓰는 이유
@@ -21,12 +40,19 @@ import com.springboot.lookoutside.repository.UserRepository;
 @Service //스프링이 컴포넌트 스캔을 통해서 Bean에 등록을 해준다. IoC
 public class UserService {
 
+	//카카오
+	@Value("${kakao.adminkey}")
+	private String kakaoAdminKey;
+
+	@Value("${kakao.JavaScriptkey}")
+	private String kakaoJavaScriptkey;
+
 	@Autowired
 	private UserRepository userRepository;
 
 	@Autowired
 	private PasswordEncoder encoder;
-	
+
 
 	//로그인
 	@Transactional
@@ -34,10 +60,10 @@ public class UserService {
 		User persistance = userRepository.findByUseId(user.getUseId()).orElseThrow(() -> { 
 			return new IllegalArgumentException("존재하지 않는 아이디");
 		});
-		
+
 		return encoder.matches(user.getUsePw(), persistance.getUsePw());
 	}
-	
+
 	//회원가입
 	@Transactional
 	public void signUp(User user) {
@@ -51,26 +77,26 @@ public class UserService {
 	//마이페이지
 	@Transactional
 	public Optional<User> myPageInfo(int useNo) {
-		
+
 		userRepository.findByUseNo(useNo).orElseThrow(() -> { 
 			return new IllegalArgumentException("존재하지 않는 아이디");
 		});
-		
+
 		return userRepository.findByUseNo(useNo);
 	}
-	
-	
+
+
 	//비밀번호 확인
 	@Transactional
 	public boolean checkMyPw(User user) {
 		User persistance = userRepository.findByUseNo(user.getUseNo()).orElseThrow(() -> { 
 			return new IllegalArgumentException("존재하지 않는 아이디");
 		});
-		
+
 		return encoder.matches(user.getUsePw(), persistance.getUsePw());
 	}
-	
-	
+
+
 	//Id 중복확인
 	@Transactional
 	public boolean useIdCheck(String useId) {
@@ -82,7 +108,7 @@ public class UserService {
 	public boolean useNickCheck(String useNick) {
 		return userRepository.existsByUseNick(useNick);
 	}
-	
+
 	//Nick 중복확인
 	@Transactional
 	public boolean useEmailCheck(String useEmail) {
@@ -92,7 +118,7 @@ public class UserService {
 	//Id 찾기
 	@Transactional
 	public String findMyId(String useEmail) {
-		
+
 		String myId = userRepository.myId(useEmail).orElseThrow(() -> { 
 			return new IllegalArgumentException("해당 Email로 가입된 ID는 없습니다.");
 		});
@@ -113,6 +139,34 @@ public class UserService {
 
 	}
 
+	//카카오 연결해제
+	public void leave(int useNo) throws Exception {
+
+		User user = userRepository.findByUseNo2(useNo);
+
+		String useId = user.getUseId();
+		String providerType = user.getProviderType().toString();
+
+		if(providerType.equals("KAKAO")) {
+
+			String reqURL = "https://kapi.kakao.com/v1/user/unlink";
+
+			HttpClient httpClient = new DefaultHttpClient();
+			HttpPost httpPost = new HttpPost(reqURL);
+			httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
+			httpPost.addHeader("Authorization", kakaoAdminKey);
+			List<NameValuePair> testParam = new ArrayList<>();
+			testParam.add(new BasicNameValuePair("target_id", useId));
+			testParam.add(new BasicNameValuePair("target_id_type", "user_id"));
+			httpPost.setEntity(new UrlEncodedFormEntity(testParam, "UTF-8"));
+			HttpResponse resp = httpClient.execute(httpPost);
+			HttpEntity respEntity = resp.getEntity();
+			Object obj = JSONValue.parse(new InputStreamReader(respEntity.getContent()));
+		}
+
+
+	}
+
 	//회원정보수정
 	@Transactional
 	public void updateUser(User user) {
@@ -123,32 +177,33 @@ public class UserService {
 		User persistance = userRepository.findById(user.getUseNo()).orElseThrow(() -> { //테스트용
 			return new IllegalArgumentException("회원찾기 실패");
 		});
-		
+
 		//비밀번호 수정
-		if(!(user.getUsePw() == null)) {
+		if(!(user.getUsePw() == null) && !(user.getUsePw().equals(""))) {
 			String rawPassword = user.getUsePw();
 			String encPassword = encoder.encode(rawPassword);
 			persistance.setUsePw(encPassword);
 		}
+
 		//이메일 수정
-		if(!(user.getUseEmail() == null)) {
-			
+		if(!(user.getUseEmail() == null) && !(user.getUseEmail().equals(""))) {
+
 			persistance.setUseEmail(user.getUseEmail());
-			
+
 		}
-		
+
 		//닉네임 수정
-		if(!(user.getUseNick() == null)) {
-			
+		if(!(user.getUseNick() == null) && !(user.getUseNick().equals(""))) {
+
 			persistance.setUseNick(user.getUseNick());
-			
+
 		}
-		
+
 		//성별 수정
 		if(!(user.getUseGender() == null)) {
-			
+
 			persistance.setUseGender(user.getUseGender());
-			
+
 		}
 
 		//회원정보 함수 종료시 서비스 종료 트랜잭션 종료 commit이 자동으로 실행
@@ -174,6 +229,5 @@ public class UserService {
 		//회원정보 함수 종료시 서비스 종료 트랜잭션 종료 commit이 자동으로 실행
 		//persistance가 변화되면 자동으로 update문 실행
 	}
-
 
 }

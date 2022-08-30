@@ -50,11 +50,11 @@ public class User {
 	@Column(nullable = false)
 	private Integer useGender;
 	
-	@Column
+	@ColumnDefault("'USER'")
 	@Enumerated(EnumType.STRING)
 	private RoleType useRole; 
 	
-	@Column(nullable = false,  unique = true)
+	@Column(nullable = false)
 	private String useEmail;
 	
 	@JsonFormat(pattern = "YY.MM.dd HH:mm:ss", timezone = "Asia/Seoul")

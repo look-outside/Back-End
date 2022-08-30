@@ -2,10 +2,19 @@ package com.springboot.lookoutside.oauth.service;
 
 import lombok.RequiredArgsConstructor;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Locale;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -47,13 +56,15 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         ProviderType providerType = ProviderType.valueOf(userRequest.getClientRegistration().getRegistrationId().toUpperCase());
 
         OAuth2UserInfo userInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(providerType, user.getAttributes());
+		
         User savedUser = userRepository.findByUseId(userInfo.getUseId());
-
+       
         if (savedUser != null) {
             if (providerType != savedUser.getProviderType()) {
+            	System.out.println(providerType);
                 throw new OAuthProviderMissMatchException(
-                        "Looks like you're signed up with " + providerType +
-                        " account. Please use your " + savedUser.getProviderType() + " account to login."
+                        "이미 SNS " + providerType +
+                        " 계정으로 가입했습니다. SNS " + savedUser.getProviderType() + " 계정으로 로그인 해주세요."
                 );
             }
             updateUser(savedUser, userInfo);
