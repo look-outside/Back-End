@@ -95,7 +95,8 @@ public class UserController {
 				user.getUseNo(),
 				user.getUseNick(),
 				user.getUseRole().getCode(),
-				new Date(now.getTime() + appProperties.getAuth().getTokenExpiry())
+				new Date(now.getTime() + appProperties.getAuth().getTokenExpiry()),
+				user.getSnsNick()
 				);
 
 		long refreshTokenExpiry = appProperties.getAuth().getRefreshTokenExpiry();
@@ -164,7 +165,8 @@ public class UserController {
 				user.getUseNo(),
 				user.getUseNick(),
 				roleType.getCode(),
-				new Date(now.getTime() + appProperties.getAuth().getTokenExpiry())
+				new Date(now.getTime() + appProperties.getAuth().getTokenExpiry()),
+				user.getSnsNick()
 				);
 
 		long validTime = authRefreshToken.getTokenClaims().getExpiration().getTime() - now.getTime();
@@ -188,6 +190,13 @@ public class UserController {
 		}
 
 		return ApiResponse.success("token", newAccessToken.getToken());
+	}
+	
+	//로그아웃
+	@PostMapping("/sign-out/{useNo}")
+	public ResponseDto<Integer> signOut(@PathVariable int useNo) throws Exception{ 
+		userService.logout(useNo);
+		return new ResponseDto<Integer>(HttpStatus.OK.value(),1); 
 	}
 
 	//회원가입

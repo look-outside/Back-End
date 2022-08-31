@@ -66,6 +66,9 @@ public class User {
     @Enumerated(EnumType.STRING)
 	private ProviderType providerType;
 	
+	@ColumnDefault("1")
+	private int snsNick;
+	
 	public User(
             String useId,
             String useName,
@@ -74,7 +77,8 @@ public class User {
             int useGender,
             ProviderType providerType,
             RoleType useRole,
-            Timestamp useCreated
+            Timestamp useCreated,
+            int snsNick
     ) {
         this.useId = useId;
         this.useName = useName;
@@ -85,6 +89,7 @@ public class User {
         this.providerType = providerType;
         this.useRole = useRole;
         this.useCreated = useCreated;
+        this.snsNick = snsNick;
     }
 
 }

@@ -126,6 +126,34 @@ public class UserService {
 		return myId;
 	}
 
+	//카카오 연결해제
+	public void logout(int useNo) throws Exception {
+
+		User user = userRepository.findByUseNo2(useNo);
+
+		String useId = user.getUseId();
+		String providerType = user.getProviderType().toString();
+
+		if(providerType.equals("KAKAO")) {
+
+			String reqURL = "https://kapi.kakao.com/v1/user/logout";
+
+			HttpClient httpClient = new DefaultHttpClient();
+			HttpPost httpPost = new HttpPost(reqURL);
+			httpPost.addHeader("Content-Type", "application/x-www-form-urlencoded");
+			httpPost.addHeader("Authorization", kakaoAdminKey);
+			List<NameValuePair> testParam = new ArrayList<>();
+			testParam.add(new BasicNameValuePair("target_id", useId));
+			testParam.add(new BasicNameValuePair("target_id_type", "user_id"));
+			httpPost.setEntity(new UrlEncodedFormEntity(testParam, "UTF-8"));
+			HttpResponse resp = httpClient.execute(httpPost);
+			HttpEntity respEntity = resp.getEntity();
+			Object obj = JSONValue.parse(new InputStreamReader(respEntity.getContent()));
+		}
+
+
+	}
+
 	//회원 삭제
 	@Transactional
 	public String deleteUser(int useNo) {
@@ -205,6 +233,8 @@ public class UserService {
 			persistance.setUseGender(user.getUseGender());
 
 		}
+
+		persistance.setSnsNick(1);
 
 		//회원정보 함수 종료시 서비스 종료 트랜잭션 종료 commit이 자동으로 실행
 		//persistance가 변화되면 자동으로 update문 실행
