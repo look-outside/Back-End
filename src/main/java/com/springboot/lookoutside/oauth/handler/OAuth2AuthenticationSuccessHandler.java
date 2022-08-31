@@ -90,7 +90,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 authuser.getUseNo(),
                 authuser.getUseNick(),
                 roleType.getCode(),
-                new Date(now.getTime() + appProperties.getAuth().getTokenExpiry())
+                new Date(now.getTime() + appProperties.getAuth().getTokenExpiry()),
+                authuser.getSnsNick()
         );
 
         // refresh 토큰 설정

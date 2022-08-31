@@ -37,6 +37,11 @@ public class AuthToken {
         this.key = key;
         this.token = createAuthToken(id, useNo, useNick, role, expiry);
     }
+    
+    AuthToken(String id, int useNo, String useNick, String role, Date expiry, int snsNick ,Key key) {
+        this.key = key;
+        this.token = createAuthToken(id, useNo, useNick, role, expiry, snsNick);
+    }
 
     private String createAuthToken(String id, Date expiry) {
         return Jwts.builder()
@@ -78,6 +83,19 @@ public class AuthToken {
                 .compact();
     }
 
+    private String createAuthToken(String id, int useNo, String useNick ,String role, Date expiry, int snsNick) {
+    	System.out.println("권한" + role);
+        return Jwts.builder()
+                .setSubject(id)
+                .claim("useNo", useNo)
+                .claim("useNick", useNick)
+                .claim(AUTHORITIES_KEY, role)
+                .claim("snsNick", snsNick)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .setExpiration(expiry)
+                .compact();
+    }
+    
     public boolean validate() {
         return this.getTokenClaims() != null;
     }

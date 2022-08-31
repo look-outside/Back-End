@@ -33,8 +33,8 @@ public class AuthTokenProvider {
         return new AuthToken(id, expiry, key);
     }
 
-    public AuthToken createAuthToken(String id, int useNo, String useNick, String role, Date expiry) {
-        return new AuthToken(id, useNo, useNick, role, expiry, key);
+    public AuthToken createAuthToken(String id, int useNo, String useNick, String role, Date expiry, int snsNick) {
+        return new AuthToken(id, useNo, useNick, role, expiry, snsNick, key);
     }
 
     public AuthToken convertAuthToken(String token) {

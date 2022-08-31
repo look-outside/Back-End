@@ -78,7 +78,8 @@ public class AuthController {
                     user.getUseNo(),
                     user.getUseNick(),
                     ((UserPrincipal) authentication.getPrincipal()).getRoleType().getCode(),
-                    new Date(now.getTime() + appProperties.getAuth().getTokenExpiry())
+                    new Date(now.getTime() + appProperties.getAuth().getTokenExpiry()),
+                    user.getSnsNick()
             );
 
             long refreshTokenExpiry = appProperties.getAuth().getRefreshTokenExpiry();
@@ -145,7 +146,8 @@ public class AuthController {
                 user.getUseNo(),
                 user.getUseNick(),
                 roleType.getCode(),
-                new Date(now.getTime() + appProperties.getAuth().getTokenExpiry())
+                new Date(now.getTime() + appProperties.getAuth().getTokenExpiry()),
+                user.getSnsNick()
         );
 
         long validTime = authRefreshToken.getTokenClaims().getExpiration().getTime() - now.getTime();
