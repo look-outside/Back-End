@@ -66,6 +66,7 @@ public class User {
     @Enumerated(EnumType.STRING)
 	private ProviderType providerType;
 	
+	@Column
 	@ColumnDefault("1")
 	private int snsNick;
 	
