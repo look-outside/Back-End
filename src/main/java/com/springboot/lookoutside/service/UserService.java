@@ -70,6 +70,7 @@ public class UserService {
 		String originUsePw = user.getUsePw(); // 원본 Pw
 		String encUsePw = encoder.encode(originUsePw); // 해쉬시킨 Pw
 		user.setUsePw(encUsePw);
+		user.setSnsNick(1);
 		userRepository.save(user); //하나의 트랜잭션 쓸수도 있으나 여러개도 가능
 
 	}

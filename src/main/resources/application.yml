@@ -31,5 +31,5 @@ app:
     refreshTokenExpiry: 604800000
   oauth2:
     authorizedRedirectUris:
-      - http://localhost:3000/oauth/redirect
+      - https://look-outside.netlify.app/oauth/redirect
   
