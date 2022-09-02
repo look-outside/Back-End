@@ -41,14 +41,14 @@ public class AwsS3Service {
     private String bucket;
 
     //게시물 이미지 등록
-    public AwsS3 upload(MultipartFile multipartFiles, String dirName) throws IOException {
+    public AwsS3 upload(MultipartFile multipartFiles, String dirName) throws Exception {
         File file = convertMultipartFileToFile(multipartFiles)
                 .orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File convert fail"));
       		
         return upload(file, dirName);
     }
 
-	private AwsS3 upload(File file, String dirName) {
+	private AwsS3 upload(File file, String dirName) throws Exception{
         String key = randomFileName(file, dirName);
         String path = putS3(file, key);
         removeFile(file);
@@ -62,7 +62,18 @@ public class AwsS3Service {
 	
     //파일명 생성
     private String randomFileName(File file, String dirName) {
-        return dirName + "/" + UUID.randomUUID() + file.getName();
+    	/*
+    	String encode = null;
+		try {
+			encode = URLEncoder.encode(file.getName(),"UTF-8").replaceAll("\\+", "%20");
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		*/
+    	//확장자명
+    	String extend = file.getName().substring(file.getName().lastIndexOf(".")+1);
+        return dirName + "/" + UUID.randomUUID() + "." + extend;
     }
 
     //이미지 업로드

@@ -51,12 +51,12 @@ public class ArticleImgService {
 	}
 
 	@Transactional
-	public String saveImg(int artNo, String imgSave, String originName, String path) {
+	public String saveImg(int artNo, String imgSave, String path) {
 
 		ArticleImg articleImg = new ArticleImg() ;
 
 		articleImg.setImgSave(imgSave);
-		articleImg.setImgOrigin(originName); 
+		//articleImg.setImgOrigin(originName); 
 		articleImg.setImgPath(path);			
 		articleImg.setArtNo(artNo);
 

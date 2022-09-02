@@ -28,7 +28,7 @@ public interface ArticleMapping {
 	
 	String getImgOrigin();
 	
-	String getImgSave();
+	//String getImgSave();
 	
 	String getImgPath();
 	

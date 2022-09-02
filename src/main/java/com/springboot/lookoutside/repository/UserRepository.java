@@ -33,10 +33,10 @@ public interface UserRepository extends JpaRepository<User, Integer>{ // <테이
 	Optional<User> findByUseEmail(String useEmail);
 	Optional<User> findByUseNo(int useNo);
 	
-	@Query(value = "select * from lo.User where useNo = ?1" , nativeQuery =true)
+	@Query(value = "select * from ebdb.User where useNo = ?1" , nativeQuery =true)
 	User findByUseNo2(int useNo);
 	
-	@Query(value = "select * from lo.User where useEmail = ?1" , nativeQuery =true)
+	@Query(value = "select * from ebdb.User where useEmail = ?1" , nativeQuery =true)
 	User findByUseEmail2(String useEmail);
 	
 	boolean existsByUseId(String useId);
@@ -45,7 +45,7 @@ public interface UserRepository extends JpaRepository<User, Integer>{ // <테이
 	Integer deleteByUseId(String useId);
 	Integer deleteByUseNo(int useNo);
 	
-	@Query(value = "select useId from lo.User where useEmail = ?1 and providerType = 'LOCAL'" , nativeQuery =true)
+	@Query(value = "select useId from ebdb.User where useEmail = ?1 and providerType = 'LOCAL'" , nativeQuery =true)
 	Optional<String> myId(String useEmail);
 	
 	

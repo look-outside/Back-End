@@ -12,7 +12,7 @@ public interface ArticleImgRepository extends JpaRepository<ArticleImg, Integer>
 	
 	ArticleImg findByImgNo(int imgNo);
 	
-	@Query(value = "SELECT IFNULL (max(imgNo), 0) FROM lo.ArticleImg WHERE artNo=?1 ORDER BY imgNo DESC LIMIT 1", nativeQuery = true)
+	@Query(value = "SELECT IFNULL (max(imgNo), 0) FROM ebdb.ArticleImg WHERE artNo=?1 ORDER BY imgNo DESC LIMIT 1", nativeQuery = true)
 	Integer findImgNo(int artNo);
 	
 	int deleteByArtNo(int artNo);	
