@@ -31,8 +31,10 @@ public class ArticleImg {
 	@JoinColumn(nullable = false)
 	private int artNo;
 	
+	/*
 	@Column
 	private String imgOrigin;
+	*/
 	
 	@Column
 	private String imgSave;

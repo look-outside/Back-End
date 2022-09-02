@@ -1,6 +1,7 @@
 package com.springboot.lookoutside.controller;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -84,7 +85,7 @@ public class ArticleController {
 
 	//파일만 업로드
 	@PostMapping("/upload")
-	public ResponseDto<List<String>> upload(@RequestPart("multipartFiles") MultipartFile[] multipartFiles) throws IOException {
+	public ResponseDto<List<String>> upload(@RequestPart("multipartFiles") MultipartFile[] multipartFiles) throws Exception {
 
 		List<String> path = new ArrayList<String>();
 
@@ -128,13 +129,14 @@ public class ArticleController {
 
 				awsS3Service.moveTo(sourceKey, destinationKey);
 
-				String imgSave = destinationKey.replace("images/", ""); 
-				String originName = destinationKey.substring(43);
+				String imgSave = URLDecoder.decode(destinationKey.replace("images/", ""),"UTF-8"); 
+				
+				//String originName = destinationKey.substring(43);
 				String path = "https://elasticbeanstalk-us-west-1-616077318706.s3.us-west-1.amazonaws.com/"+destinationKey;
 
 				System.out.println(path);
 
-				articleImgService.saveImg(artNo, imgSave, originName, path);//이미지 파일 data 저장
+				articleImgService.saveImg(artNo, imgSave, path);//이미지 파일 data 저장
 
 			}
 
@@ -198,12 +200,12 @@ public class ArticleController {
 				
 				String imgSave = destinationKey.replace("https://elasticbeanstalk-us-west-1-616077318706.s3.us-west-1.amazonaws.com/images/", ""); 
 				
-				String originName = destinationKey.substring(43);
+				//String originName = destinationKey.substring(43);
 				String path = "https://elasticbeanstalk-us-west-1-616077318706.s3.us-west-1.amazonaws.com/"+destinationKey;
 
 				System.out.println(path);
 
-				articleImgService.saveImg(artNo, imgSave, originName, path);//이미지 파일 data 저장
+				articleImgService.saveImg(artNo, imgSave, path);//이미지 파일 data 저장
 
 			}
 
